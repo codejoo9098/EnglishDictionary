@@ -1,22 +1,22 @@
 package kr.co.project.zeroid.englishdictionary.addVoca;
 
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.gson.JsonObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
-import androidx.appcompat.app.AlertDialog;
+import java.io.IOException;
+import java.util.regex.Pattern;
+
 import androidx.appcompat.app.AppCompatActivity;
 import kr.co.project.zeroid.englishdictionary.R;
-import kr.co.project.zeroid.englishdictionary.addVoca.papagoRetrofit.PapagoResponseDto;
-import kr.co.project.zeroid.englishdictionary.addVoca.papagoRetrofit.PapagoService;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AddVocaActivity extends AppCompatActivity {
 
@@ -24,51 +24,56 @@ public class AddVocaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_voca);
-        Retrofit retrofit= new Retrofit.Builder()
-                .baseUrl(getString(R.string.baseURL))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
 
         TextView addVocaEditText=findViewById(R.id.addVocaEditText);
         Button addVocaButton=findViewById(R.id.searchButton);
         TextView vocaResultTextView=findViewById(R.id.vocaResultTextView);
 
-        PapagoService papagoService=retrofit.create(PapagoService.class);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         addVocaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String inputText=addVocaEditText.getText().toString();
-                Call<PapagoResponseDto> call=papagoService.requestPapago(
-                        getString(R.string.CLIENT_ID),
-                        getString(R.string.CLIENT_SECRET),
-                        "en",
-                        "ko",
-                        inputText);
-
-                call.enqueue(new Callback<PapagoResponseDto>() {
-
-                    @Override
-                    public void onResponse(Call<PapagoResponseDto> call, Response<PapagoResponseDto> response) {
-                        PapagoResponseDto papagoResponse=response.body();
-                        vocaResultTextView.setText(getTranslatedText(papagoResponse));
-                    }
-
-                    @Override
-                    public void onFailure(Call<PapagoResponseDto> call, Throwable t) {
-                        AlertDialog.Builder dialog= new AlertDialog.Builder(AddVocaActivity.this);
-                        dialog.setTitle("알림!");
-                        dialog.setMessage("통신에 실패했습니다.");
-                        dialog.show();
-                    }
-                });
+                String text= addVocaEditText.getText().toString();
+                Pattern onlyEnglish = Pattern.compile("^[a-zA-Z0-9]+$");
+                Pattern onlyKorean=Pattern.compile("^[가-힣]+$");
+                if(onlyEnglish.matcher(text).matches()) {
+                    addVocaEditText.setText(null);
+                    String result=searchEnglish(text);
+                    vocaResultTextView.setText(result);
+                } else if(onlyKorean.matcher(text).matches()) {
+                    addVocaEditText.setText(null);
+                    String result=searchKorean(text);
+                    vocaResultTextView.setText(result);
+                } else {
+                    addVocaEditText.setText(null);
+                    Toast.makeText(getApplicationContext(),"영어만 입력하거나 한글만 입력하세요.",Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
 
-    private String getTranslatedText(PapagoResponseDto papagoResponse) {
-        JsonObject jsonObject = papagoResponse.message;
-        jsonObject = jsonObject.getAsJsonObject("result");
-        String translatedText=jsonObject.get("translatedText").getAsString();
-        return translatedText;
+    private String searchEnglish(String text) {
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(getString(R.string.baseURL)+text).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String result=doc.head().select("meta[property=og:description]").first().attr("content");
+        return result;
+    }
+
+    private String searchKorean(String text) {
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(getString(R.string.baseURL)+text).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Element elem=doc.getElementsByAttributeValue("data-tiara-layer","word eng").select("ul[class=list_search]").first();
+        String result=elem.text();
+        return result;
     }
 }

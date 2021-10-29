@@ -1,6 +1,4 @@
 <resources>
     <string name="app_name">EnglishDictionary</string>
-    <string name="CLIENT_ID">CvSQGzMAuuGS3gUwW4f6</string>
-    <string name="CLIENT_SECRET">EXzJ21ypst</string>
-    <string name="baseURL">https://openapi.naver.com/</string>
+    <string name="baseURL">https://dic.daum.net/search.do?q=</string>
 </resources>
