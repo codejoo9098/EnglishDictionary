@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">EnglishDictionary</string>
+    <string name="baseURL">https://dic.daum.net/search.do?q=</string>
 </resources>
