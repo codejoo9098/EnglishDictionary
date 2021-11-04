@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">EnglishDictionary</string>
     <string name="baseURL">https://dic.daum.net/search.do?q=</string>
+    <string name="searchVoca">단어검색</string>
+    <string name="myVoca">나만의 단어장</string>
+    <string name="vocaTest">단어 테스트</string>
+    <string name="all_In_One">ALL-IN-ONE</string>
+    <string name="dictionary">DICTIONARY</string>
 </resources>
