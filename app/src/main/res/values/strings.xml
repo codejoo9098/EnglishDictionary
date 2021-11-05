@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">EnglishDictionary</string>
+    <string name="search">검색</string>
+    <string name="my_word">나만의단어장</string>
+    <string name="wrong_note">오답노트</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
