@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +53,7 @@ public class MyWordFragment extends Fragment {
         arr3.add("의미하다"); arr3.add("사악한");
         WordAndMean wam3=new WordAndMean(3,"Mean",arr3,arr3.size(),0);
         adapter.addItem(wam3);
-
+        Log.d("aa","aa");//
         rc.setLayoutManager(new LinearLayoutManager(getActivity()));
         rc.setAdapter(adapter);
         return view;
