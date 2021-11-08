@@ -48,6 +48,7 @@ public class MyWordFragment extends Fragment {
         arr2.add("의미하다"); arr2.add("사악한");
         WordAndMean wam2=new WordAndMean(2,"Mean",arr2,arr2.size(),0);
         adapter.addItem(wam2);
+        //test2
 
         ArrayList<String> arr3=new ArrayList<>();
         arr3.add("의미하다"); arr3.add("사악한");
