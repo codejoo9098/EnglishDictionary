@@ -3,53 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <ImageButton
-            android:id="@+id/back_home"
-            android:layout_width="45dp"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_baseline_home_24"
-            android:scaleType="centerCrop"
-            android:layout_gravity="center"
-            android:background="#79ecff"
-            />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="나만의 단어장"
-            android:textSize="30sp"
-            android:textColor="#ffffff"
-            android:background="#79ecff"/>
-        <ImageButton
-            android:id="@+id/word_add"
-            android:layout_width="45dp"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_baseline_add_24"
-            android:scaleType="centerCrop"
-            android:layout_gravity="center"
-            android:background="#79ecff"
-            android:onClick="wordAdd"
-            />
-
-    </LinearLayout>
-    <FrameLayout
-        android:id="@+id/frame"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        />
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/BottomNavigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#79ecff"
-        app:menu="@menu/menu"
-        app:labelVisibilityMode="unlabeled"
-        app:itemIconTint="@drawable/menu_item_color"
-        />
 </LinearLayout>
