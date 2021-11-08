@@ -4,6 +4,11 @@
     <string name="my_word">나만의단어장</string>
     <string name="wrong_note">오답노트</string>
     <string name="search_hint">검색할 내용을 입력해주세요</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="baseURL">https://dic.daum.net/search.do?q=</string>
+    <string name="searchVoca">단어검색</string>
+    <string name="myVoca">나만의 단어장</string>
+    <string name="vocaTest">단어 테스트</string>
+    <string name="all_In_One">ALL-IN-ONE</string>
+    <string name="dictionary">DICTIONARY</string>
 </resources>
