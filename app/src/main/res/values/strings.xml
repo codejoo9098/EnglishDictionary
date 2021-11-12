@@ -6,4 +6,13 @@
     <string name="vocaTest">단어 테스트</string>
     <string name="all_In_One">ALL-IN-ONE</string>
     <string name="dictionary">DICTIONARY</string>
+    <string name="setup_time">제한 시간 설정</string>
+    <string name="korean_test">한국어 테스트</string>
+    <string name="english_test">영어 테스트</string>
+    <string name="ready">준비하십시오!</string>
+    <string name="test_is_coming">곧 테스트가 시작됩니다!</string>
+    <string name="korean_test_title">한국어 테스트</string>
+    <string name="time_remaining">남은 시간</string>
+    <string name="complete">완료</string>
+    <string name="input_korean_hint">뜻을 입력해주세요</string>
 </resources>
