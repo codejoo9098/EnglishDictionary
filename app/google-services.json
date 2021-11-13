@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "790147292941-1lhh0fb6jlmjjhhr4jho97uofnku5tg6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kr.co.project.zeroid.englishdictionary",
+            "certificate_hash": "2ca7f14b9974ec49f59a1714c527c5de4f13c18e"
+          }
+        },
+        {
           "client_id": "790147292941-rtqpts1adtch5sv2efcbsptk4caok1ab.apps.googleusercontent.com",
           "client_type": 3
         }

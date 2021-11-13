@@ -30,13 +30,13 @@ public class AddVocaCustomView extends BaseAdapter {
     @Override
     public Object getItem(int position)
     {
-        return null;
+        return listViewData.get(position).voca;
     }
 
     @Override
     public long getItemId(int position)
     {
-        return 0;
+        return position;
     }
 
     @Override
