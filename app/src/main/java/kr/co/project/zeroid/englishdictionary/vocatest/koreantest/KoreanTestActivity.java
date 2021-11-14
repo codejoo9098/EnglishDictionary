@@ -2,6 +2,8 @@ package kr.co.project.zeroid.englishdictionary.vocatest.koreantest;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.hilt.lifecycle.ViewModelFactoryModules;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
@@ -10,12 +12,14 @@ import android.view.View;
 
 import kr.co.project.zeroid.englishdictionary.R;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivityKoreanTestBinding;
+import kr.co.project.zeroid.englishdictionary.etc.MyViewModelFactory;
 
 public class KoreanTestActivity extends AppCompatActivity {
     ActivityKoreanTestBinding binding;
     KoreanTestViewModel viewModel;
     final static String MINUTE = "minute";
     final static String SECOND = "second";
+    ViewModelProvider.Factory factory;
     int minute, second;
 
     @Override
@@ -27,11 +31,23 @@ public class KoreanTestActivity extends AppCompatActivity {
         Bundle bundle = intent.getExtras();
         minute = bundle.getInt(MINUTE, 1);
         second = bundle.getInt(SECOND, 0);
-        binding.minute.setText(String.valueOf(minute));
-        binding.second.setText(String.valueOf(second));
 
-        viewModel = new ViewModelProvider(this).get(KoreanTestViewModel.class);
-        viewModel.minute.setValue(minute);
-        viewModel.second.setValue(second);
+        factory = new MyViewModelFactory(minute, second);
+        viewModel = new ViewModelProvider(this, factory).get(KoreanTestViewModel.class);
+        binding.setLifecycleOwner(this);
+        binding.setViewModel(viewModel);
+        viewModel.minute.setValue(String.valueOf(minute));
+        viewModel.second.setValue(String.valueOf(second));
+
+        viewModel.isFinished.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                navigateToResultPage();
+            }
+        });
+    }
+
+    private void navigateToResultPage() {
+        finish();
     }
 }

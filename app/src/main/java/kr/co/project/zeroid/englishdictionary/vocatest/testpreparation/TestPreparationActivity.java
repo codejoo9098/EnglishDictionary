@@ -24,13 +24,13 @@ public class TestPreparationActivity extends AppCompatActivity {
     final static boolean ENGLISH_TEST = false;
     int minute, second;
     boolean testType;
-    String displayTime = "5";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_test_preparation);
         viewModel = new ViewModelProvider(this).get(TestPreparationViewModel.class);
+        binding.setLifecycleOwner(this);
         binding.setViewModel(viewModel);
 
         Intent intent = getIntent();
@@ -39,14 +39,6 @@ public class TestPreparationActivity extends AppCompatActivity {
         minute = bundle.getInt(MINUTE);
         second = bundle.getInt(SECOND);
         testType = bundle.getBoolean(TEST_TYPE);
-
-        viewModel.second.observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer integer) {
-                displayTime = Integer.toString(integer);
-                binding.readyTime.setText(displayTime);
-            }
-        });
 
         viewModel.isFinished.observe(this, new Observer<Boolean>() {
             @Override

@@ -29,6 +29,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import kr.co.project.zeroid.englishdictionary.addVoca.AddVocaActivity;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivityMainBinding;
+import kr.co.project.zeroid.englishdictionary.vocatest.settingvoca.SettingVocaTestActivity;
 
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
@@ -58,12 +59,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        binding.setLifecycleOwner(this);
         binding.setViewModel(viewModel);
 
         viewModel.navigateToSearchVoca.observe(this, new Observer<Void>() {
             @Override
             public void onChanged(Void unused) {
                 navigateToSearchVocaPage();
+            }
+        });
+
+        viewModel.navigateToVocaTest.observe(this, new Observer<Void>() {
+            @Override
+            public void onChanged(Void unused) {
+                navigateToVocaTestPage();
             }
         });
 
@@ -127,6 +136,11 @@ public class MainActivity extends AppCompatActivity {
 
     void navigateToSearchVocaPage() {
         Intent intent = new Intent(this, AddVocaActivity.class);
+        startActivity(intent);
+    }
+
+    void navigateToVocaTestPage() {
+        Intent intent = new Intent(this, SettingVocaTestActivity.class);
         startActivity(intent);
     }
 

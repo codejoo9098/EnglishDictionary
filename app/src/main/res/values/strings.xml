@@ -15,4 +15,5 @@
     <string name="time_remaining">남은 시간</string>
     <string name="complete">완료</string>
     <string name="input_korean_hint">뜻을 입력해주세요</string>
+    <string name="test_over">테스트 종료</string>
 </resources>
