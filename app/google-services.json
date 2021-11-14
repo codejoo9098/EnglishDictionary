@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "790147292941",
+    "firebase_url": "https://englishdictionary-bb005-default-rtdb.firebaseio.com",
+    "project_id": "englishdictionary-bb005",
+    "storage_bucket": "englishdictionary-bb005.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790147292941:android:13a579f793d61db0ee5a44",
+        "android_client_info": {
+          "package_name": "kr.co.project.zeroid.englishdictionary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "790147292941-1lhh0fb6jlmjjhhr4jho97uofnku5tg6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kr.co.project.zeroid.englishdictionary",
+            "certificate_hash": "2ca7f14b9974ec49f59a1714c527c5de4f13c18e"
+          }
+        },
+        {
+          "client_id": "790147292941-rtqpts1adtch5sv2efcbsptk4caok1ab.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRLAsd5n_483JmwtUtdYCdx47GMy0sDtM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "790147292941-rtqpts1adtch5sv2efcbsptk4caok1ab.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
