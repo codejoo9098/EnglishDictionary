@@ -14,8 +14,9 @@ import java.util.ArrayList;
 import kr.co.project.zeroid.englishdictionary.R;
 
 public class WrongAdapter extends RecyclerView.Adapter<WrongAdapter.WrongViewHolder> {
-    ArrayList<WordAndMean> itemList;
+    static ArrayList<WordAndMean> itemList;
     private WrongViewHolder holder;
+
     public WrongAdapter(){
         itemList=new ArrayList<>();
     }
@@ -57,9 +58,24 @@ public class WrongAdapter extends RecyclerView.Adapter<WrongAdapter.WrongViewHol
             english=itemView.findViewById(R.id.wrong_english);
             koreanMean=itemView.findViewById(R.id.wrong_koreanMean);
             wrongCount=itemView.findViewById(R.id.wrong_count);
+            koreanMean.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    WrongNoteFragment.wrongNoteDialog(no,english);
+                    return false;
+                }
+            });
+            wrongCount.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    WrongNoteFragment.wrongNoteDialog(no,english);
+                    return false;
+                }
+            });
+
         }
         public void setItem(WordAndMean wam){ //뷰 한개 구성하기
-            no.setText(""+wam.number);
+            no.setText(""+(itemList.indexOf(wam)+1));
             english.setText(wam.englishWord);
 
             String s="";

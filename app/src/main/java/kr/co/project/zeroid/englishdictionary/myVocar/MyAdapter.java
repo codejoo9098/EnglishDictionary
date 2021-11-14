@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import kr.co.project.zeroid.englishdictionary.R;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyWordViewHolder> {
-    ArrayList<WordAndMean> itemList;
+    static public ArrayList<WordAndMean> itemList;
     private MyWordViewHolder holder; //뷰홀더 객체생성.
 
     public MyAdapter(){
@@ -53,17 +54,23 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyWordViewHolder> 
             no=itemView.findViewById(R.id.no);
             english=itemView.findViewById(R.id.english);
             koreanMean=itemView.findViewById(R.id.koreanMean);
+            if(MyVocaActivity.myWordPage==1) {
+                koreanMean.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        MyWordFragment.Didalog(view, no, english, koreanMean);
+                        return false;
+                    }
+                });
+            }
         }
 
         public void setItem(WordAndMean wam){ //뷰 한개 구성하기
-            Log.d("aaa","setitem메서드");
-            no.setText(""+wam.number);
-            Log.d("aaa","setitem메서드");
+            no.setText(""+(itemList.indexOf(wam)+1));
+            Log.d("aaa",""+itemList.indexOf(wam)+","+wam.englishWord);
             english.setText(wam.englishWord);
-
             String s="";
             int s_count=wam.meanCount();
-            Log.d("aaa","setitem메서드2");
             if(s_count==1){ //뜻이 한개인 경우
                 s=s+wam.getOneMean(0);
             }
@@ -79,5 +86,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyWordViewHolder> 
             koreanMean.setText(s);
         }
     }
+
 
 }

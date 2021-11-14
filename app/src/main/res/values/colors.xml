@@ -11,4 +11,5 @@
     <color name="gray">#AAA</color>
     <color name="red_title">#FF0000</color>
     <color name="blue_title">#0000FF</color>
+    <color name="my_voca_dialog_thin">#888</color>
 </resources>

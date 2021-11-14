@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -49,19 +50,26 @@ public class SearchFragment extends Fragment {
 
         ArrayList<String> arr = new ArrayList<>();
         arr.add("바나나");
-        WordAndMean wam1 = new WordAndMean(1, "Banana", arr, arr.size(), 0);
+        WordAndMean wam1 = new WordAndMean("Banana", arr, 0);
         db.add(wam1);
 
         ArrayList<String> arr2 = new ArrayList<>();
         arr2.add("의미하다");
         arr2.add("사악한");
-        WordAndMean wam2 = new WordAndMean(2, "Mean", arr2, arr2.size(), 0);
+        WordAndMean wam2 = new WordAndMean("Mean", arr2, 0);
         db.add(wam2);
 
         ArrayList<String> arr3 = new ArrayList<>();
         arr3.add("사과");
-        WordAndMean wam3 = new WordAndMean(3, "Apple", arr3, arr3.size(), 0);
+        WordAndMean wam3 = new WordAndMean("Apple", arr3, 0);
         db.add(wam3);
+
+        ArrayList<String> arr4 = new ArrayList<>();
+        arr4.add("의미하다");
+        arr4.add("사악한");
+        WordAndMean wam4 = new WordAndMean("Mean", arr4, 0);
+        db.add(wam4);
+
 
         searchView = view.findViewById(R.id.search_view);
         categoryBar=view.findViewById(R.id.categoryBar);
@@ -83,10 +91,12 @@ public class SearchFragment extends Fragment {
                         }
                     }
                     if(count==0){
+                        categoryBar.setVisibility(View.GONE);
                         Toast.makeText(getContext(), "검색과 일치하는 단어가 없습니다.", Toast.LENGTH_SHORT).show();
                     }
                     else{
                         categoryBar.setVisibility(View.VISIBLE);
+
                         rc.setLayoutManager(new LinearLayoutManager(getActivity()));
                         rc.setAdapter(adapter);
                     }
@@ -99,6 +109,7 @@ public class SearchFragment extends Fragment {
                         }
                     }
                     if(count==0){
+                        categoryBar.setVisibility(View.GONE);
                         Toast.makeText(getContext(), "검색과 일치하는 단어가 없습니다.", Toast.LENGTH_SHORT).show();
                     }
                     else{

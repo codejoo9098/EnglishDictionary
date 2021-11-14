@@ -3,24 +3,20 @@ package kr.co.project.zeroid.englishdictionary.myVocar;
 import java.util.ArrayList;
 
 public class WordAndMean { //뷰홀더에 담길 객체
-    int number; //NO.몇번인지
     String englishWord;
     ArrayList<String> mean;
     int mean_count;
     int wrongCount;
 
 
-    public WordAndMean(int number,String e,ArrayList<String> m,int mc,int wc){
-        this.number=number;
+    public WordAndMean(String e,ArrayList<String> m,int wc){
         this.englishWord=e;
         this.mean=m;
-        this.mean_count=mc;
+        this.mean_count=m.size();
         this.wrongCount=wc;
     }
 
-    public int getNumber() {
-        return number;
-    }
+
     public String getEnglishWord() { return englishWord; }
     public ArrayList<String> getMean() {
         return mean;
@@ -31,9 +27,7 @@ public class WordAndMean { //뷰홀더에 담길 객체
     }
 
 
-    public void setNumber(int n) {
-        this.number = n;
-    }
+
     public void setEnglishWord(String englishWord) { this.englishWord = englishWord; }
     public void setMean(ArrayList<String> mean) {
         this.mean = mean;
@@ -50,6 +44,7 @@ public class WordAndMean { //뷰홀더에 담길 객체
     public int meanCount(){
         return mean.size();
     } //뜻 개수
+
     public void replaceMean(String replace_mean,int i) {
         mean.set(i,replace_mean);
     } //뜻 교체
