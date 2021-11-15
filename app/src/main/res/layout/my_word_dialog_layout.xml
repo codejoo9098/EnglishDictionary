@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="영단어 수정"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/my_voca_dialog_thin"
+        android:textSize="15sp"
+        />
+    <TextView
+        android:id="@+id/english_in_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="수정하고싶은 뜻을 입력해주세요"
+        android:layout_marginTop="17dp"
+        android:textSize="20sp"
+        />
+    <Spinner
+        android:id="@+id/mean_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        />
+    <EditText
+        android:id="@+id/edit_mean"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:hint="뜻수정말고 삭제를 원한다면 삭제!를 입력"
+        android:textColorHint="@color/teal_200"
+        android:inputType="text|textNoSuggestions"
+        android:textSize="15sp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="해당 영단어에 뜻을 추가하세요"
+        android:layout_marginTop="17dp"
+        android:textSize="20sp"
+        />
+    <EditText
+        android:id="@+id/add_mean"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:hint="추가할 뜻을 입력해주세요"
+        android:inputType="text|textNoSuggestions"
+        android:textSize="18sp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="해당단어를 다 외웠다면?"
+        android:layout_marginTop="17dp"
+        android:layout_gravity="center_horizontal"
+        android:textSize="20sp"
+        />
+    <Button
+        android:id="@+id/delete_in_my_word"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="삭제"
+        android:layout_gravity="center_horizontal"
+        android:textSize="18sp"
+        />
+
+</LinearLayout>

@@ -25,6 +25,15 @@
             android:name=".vocatest.settingvoca.SettingVocaTestActivity"
             android:exported="true" />
         <activity
+            android:name=".myVocar.DeleteDialogActivity"
+            android:exported="true"
+            android:label="확인"
+            android:theme="@style/Theme.AppCompat.DayNight.Dialog.Alert"
+            />
+        <activity
+            android:name=".myVocar.MyVocaActivity"
+            android:exported="true" />
+        <activity
             android:name=".addVoca.AddVocaActivity"
             android:exported="false" />
         <activity

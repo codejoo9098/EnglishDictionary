@@ -3,6 +3,21 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+<<<<<<< HEAD
+        <entry key="..\:/Users/rhthr/AndroidStudioProjects/EnglishDictionary/app/src/main/res/drawable/blue_button.xml" value="0.23333333333333334" />
+        <entry key="..\:/Users/rhthr/AndroidStudioProjects/EnglishDictionary/app/src/main/res/drawable/menu_item_color.xml" value="0.1234375" />
+        <entry key="..\:/Users/rhthr/AndroidStudioProjects/EnglishDictionary/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/rhthr/AndroidStudioProjects/EnglishDictionary/app/src/main/res/layout/fragment_my_word.xml" value="0.20852641334569044" />
+        <entry key="..\:/Users/rhthr/AndroidStudioProjects/EnglishDictionary/app/src/main/res/layout/fragment_search.xml" value="0.125" />
+        <entry key="..\:/Users/rhthr/AndroidStudioProjects/EnglishDictionary/app/src/main/res/layout/fragment_wrong_note.xml" value="0.20852641334569044" />
+        <entry key="..\:/Users/rhthr/AndroidStudioProjects/EnglishDictionary/app/src/main/res/layout/item_my_word.xml" value="0.25" />
+        <entry key="..\:/Users/rhthr/AndroidStudioProjects/EnglishDictionary/app/src/main/res/layout/item_wrong_word.xml" value="0.4395833333333333" />
+        <entry key="..\:/Users/rhthr/AndroidStudioProjects/EnglishDictionary/app/src/main/res/menu/menu.xml" value="0.375" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+=======
         <entry key="..\:/AndroidProjects/EnglishDictionary/app/src/main/res/layout/activity_add_voca.xml" value="0.264" />
         <entry key="..\:/AndroidProjects/EnglishDictionary/app/src/main/res/layout/activity_main.xml" value="0.22727272727272727" />
         <entry key="..\:/AndroidProjects/EnglishDictionary/app/src/main/res/layout/custom_add_voca.xml" value="0.25364583333333335" />
@@ -11,6 +26,7 @@
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+>>>>>>> a7b35fde48334fc9011b754dfb07f77f6c789c32
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
