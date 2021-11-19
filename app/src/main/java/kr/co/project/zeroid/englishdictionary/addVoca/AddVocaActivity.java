@@ -2,7 +2,9 @@ package kr.co.project.zeroid.englishdictionary.addVoca;
 
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -20,13 +22,17 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.regex.Pattern;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import kr.co.project.zeroid.englishdictionary.R;
+import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
 
 public class AddVocaActivity extends AppCompatActivity {
 
@@ -45,6 +51,8 @@ public class AddVocaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_voca);
+
+        getDataExample();
 
         ListView listView=findViewById(R.id.addVocaListView);
         TextView searchVocaEditText=findViewById(R.id.searchVocaEditText);
@@ -66,15 +74,14 @@ public class AddVocaActivity extends AppCompatActivity {
                     Pattern onlyEnglish = Pattern.compile("^[a-zA-Z]+$");
                     Pattern onlyKorean=Pattern.compile("^[가-힣]+$");
                     if(onlyEnglish.matcher(searchText).matches()) {
-                        searchVocaEditText.setText(null);
                         String result=searchEnglish(searchText);
                         resultArray=searchEnglishTrimResult(result);
+                        listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
                     } else if(onlyKorean.matcher(searchText).matches()) {
-                        searchVocaEditText.setText(null);
                         String result=searchKorean(searchText);
                         resultArray=searchKoreanTrimResult(result);
+                        listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
                     } else {
-                        searchVocaEditText.setText(null);
                         searchText=null;
                         return false;
                     }
@@ -84,6 +91,7 @@ public class AddVocaActivity extends AppCompatActivity {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe((result)->{
                             //onPostExecute
+                            searchVocaEditText.setText(null);
                             if(result==true) {
                                 addVocaProgressBar.setVisibility(View.GONE);
                                 showResult(listView, resultArray);
@@ -102,15 +110,25 @@ public class AddVocaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                    if(searchText==null) return;
                     int childCount = listView.getChildCount();
+                    if(searchText==null || childCount==0) {
+                        Toast.makeText(getApplicationContext(),"추가할 단어가 없습니다.",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     ArrayList<String> inputVocaList = new ArrayList<>();
                     for (int i = 0; i < childCount; i++) {
                         if (listView.isItemChecked(i)) {
                             inputVocaList.add((String) listView.getAdapter().getItem(i));
                         }
                     }
+                    if(inputVocaList.isEmpty()) {
+                        Toast.makeText(getApplicationContext(),"추가할 단어가 선택되지 않았습니다.",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     addInputVocaListToFirebaseRealtimeDatabase(inputVocaList);
+                    //단어 추가하고 다시 받아옴
+                    SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
+                    Toast.makeText(getApplicationContext(),"단어가 추가됬습니다.",Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getApplicationContext(),"로그인이 필요한 서비스입니다.",Toast.LENGTH_SHORT).show();
                 }
@@ -122,9 +140,11 @@ public class AddVocaActivity extends AppCompatActivity {
         DatabaseReference myRef=databaseReference.child("users").child(FirebaseAuth.getInstance().getUid()).child(searchText);
         //기존에 추가한 단어를 중복해서 추가할경우 기존에 저장한 값은 없어짐
         myRef.setValue(searchText);
+        int index=1;
         for(String inputVoca:inputVocaList) {
-            //push == auto_increment
-            myRef.push().setValue(inputVoca);
+            //키 값에 -를 붙여야 제대로 가져옴
+            myRef.child("-"+index).setValue(inputVoca);
+            index++;
         }
     }
 
@@ -184,5 +204,31 @@ public class AddVocaActivity extends AppCompatActivity {
             searchText=null;
             Toast.makeText(getApplicationContext(),"검색 결과가 없습니다.",Toast.LENGTH_SHORT).show();
         }
+    }
+
+    //데이터 가져오기 예제
+    //로그인을 하면 메인에서 데이터를 가져왔으니까 그것을 사용해 보는예제
+    //현재 DB에 있는 로그인된 계정의 데이터를 전부 가져온다.
+    private void getDataExample() {
+        HashMap<String, HashMap<String,String>> singletonVocaMap=SingletonVocaMap.getInstance(getApplicationContext());
+        AlertDialog.Builder dialog=new AlertDialog.Builder(AddVocaActivity.this);
+        String dialogString="";
+        if(!singletonVocaMap.isEmpty()) {
+            //검색한 단어들의 set이다.
+            Set<String> searchVocaSet=singletonVocaMap.keySet();
+            for(String searchVoca:searchVocaSet) {
+                //추가한 단어들의 set이다.
+                dialogString=dialogString+"검색한 단어 : "+searchVoca+"\n";
+                Set<String> addVocaSet=singletonVocaMap.get(searchVoca).keySet();
+                for(String addVoca:addVocaSet) {
+                    String tmp=singletonVocaMap.get(searchVoca).get(addVoca);
+                    dialogString=dialogString+addVoca+"번째 : " + tmp + "\n";
+                }
+            }
+            dialog.setMessage(dialogString);
+        } else {
+            dialog.setMessage("단어가 없습니다.");
+        }
+        dialog.show();
     }
 }
