@@ -2,7 +2,6 @@ package kr.co.project.zeroid.englishdictionary;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -22,6 +21,10 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -29,17 +32,15 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import kr.co.project.zeroid.englishdictionary.addVoca.AddVocaActivity;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivityMainBinding;
+import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
 import kr.co.project.zeroid.englishdictionary.vocatest.settingvoca.SettingVocaTestActivity;
 
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
     MainViewModel viewModel;
-    String androidId;
 
     Button logoutButton;
     Button withdrawalButton;
-
-    private static final int RC_SIGN_IN = 900;
 
     private GoogleSignInClient googleSignInClient;
 
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     private SignInButton googleSignInButton;
 
-    //파이어베이스 데이터베이스 연동
+    //파이어베이스 데이터베이스 연동 싱글톤으로 Firebase가 제공해줌
     private FirebaseDatabase database = FirebaseDatabase.getInstance();
 
     //DatabaseReference는 데이터베이스의 특정 위치로 연결하는 거라고 생각하면 된다.
@@ -76,10 +77,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 안드로이드 아이디
-        androidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-        Toast.makeText(this,"androidId : "+androidId,Toast.LENGTH_SHORT).show();
-
         // 파이어베이스 인증 객체 선언
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -98,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent signInIntent = googleSignInClient.getSignInIntent();
-                startActivityForResult(signInIntent, RC_SIGN_IN);
+                launcher.launch(signInIntent);
             }
         });
 
@@ -128,6 +125,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         if(firebaseAuth.getCurrentUser()!=null) {
+            //DB에서 데이터 읽어서 Map에다 넣기
+            SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
             googleSignInButton.setVisibility(View.GONE);
             logoutButton.setVisibility(View.VISIBLE);
             withdrawalButton.setVisibility(View.VISIBLE);
@@ -144,25 +143,25 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        // 구글로그인 버튼 응답
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                // 구글 로그인 성공
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-                googleSignInButton.setVisibility(View.GONE);
-                logoutButton.setVisibility(View.VISIBLE);
-                withdrawalButton.setVisibility(View.VISIBLE);
-            } catch (ApiException e) {
-                Toast.makeText(MainActivity.this,"구글회원가입 또는 로그인 오류입니다.",Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+    ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == RESULT_OK) {
+                        Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
+                        try {
+                            // 구글 로그인 성공
+                            GoogleSignInAccount account = task.getResult(ApiException.class);
+                            firebaseAuthWithGoogle(account);
+                            googleSignInButton.setVisibility(View.GONE);
+                            logoutButton.setVisibility(View.VISIBLE);
+                            withdrawalButton.setVisibility(View.VISIBLE);
+                        } catch (ApiException e) {
+                            Toast.makeText(MainActivity.this,"구글회원가입 또는 로그인 오류입니다.",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
 
     // 사용자가 정상적으로 로그인한 후에 GoogleSignInAccount 개체에서 ID 토큰을 가져와서
     // Firebase 사용자 인증 정보로 교환하고 Firebase 사용자 인증 정보를 사용해 Firebase에 인증합니다.
@@ -174,6 +173,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            //DB에서 데이터 읽어서 Map에다 넣기
+                            SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
                             Toast.makeText(MainActivity.this, "로그인 성공", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(MainActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
