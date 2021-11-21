@@ -11,14 +11,14 @@
         <TextView
             android:id="@+id/no"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             />
         <TextView
             android:id="@+id/english"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:layout_weight="4"
             />

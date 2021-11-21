@@ -11,14 +11,14 @@
         <TextView
             android:id="@+id/wrong_no"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
             />
         <TextView
             android:id="@+id/wrong_english"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:gravity="center"
             android:layout_weight="4"
             />
@@ -32,7 +32,7 @@
         <TextView
             android:id="@+id/wrong_count"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="2"
             android:gravity="center"
             />

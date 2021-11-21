@@ -143,7 +143,7 @@ public class AddVocaActivity extends AppCompatActivity {
         int index=1;
         for(String inputVoca:inputVocaList) {
             //키 값에 -를 붙여야 제대로 가져옴
-            myRef.child("-"+index).setValue(inputVoca);
+            myRef.child("-"+index).setValue(inputVoca.trim());
             index++;
         }
     }
