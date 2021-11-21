@@ -14,6 +14,7 @@ public class KoreanTestViewModel extends ViewModel {
     final static int ONE_MINUTE = 60;
 
     public String[] questionList = TestList.questionList;
+    public String[] submitList = TestList.submitList;
     public int totalQuestionNumber = TestList.totalQuestionNumber;
     public Boolean[] isSolvedList = TestList.isSolvedList;
 
@@ -33,10 +34,12 @@ public class KoreanTestViewModel extends ViewModel {
     MutableLiveData<Integer> currentWordIndex;
     public LiveData<Integer> getCurrentWordIndex() { return currentWordIndex; }
     SingleLiveEvent<Integer> updateSolvedList;
+    String submitWord;
     int totalTime;
     int progressState = 0;
 
     public KoreanTestViewModel(int inputMinute, int inputSecond) {
+
         minute = new MutableLiveData<>();
         second = new MutableLiveData<>();
         displayWord = new MutableLiveData<>();
@@ -52,6 +55,7 @@ public class KoreanTestViewModel extends ViewModel {
 
         totalTime = inputMinute * ONE_MINUTE + inputSecond;
         thread = new Thread(new Runnable() {
+
             @Override
             public void run() {
                 int countMinute = inputMinute;
@@ -82,9 +86,16 @@ public class KoreanTestViewModel extends ViewModel {
         thread.start();
     }
 
+    public void onAnswerChanged(CharSequence s, int start, int before, int count) {
+        if (count != 0) {
+            submitWord = s.toString();
+        }
+    }
+
     public void onClickCompleteWord() {
         int index = currentWordIndex.getValue();
         if (!isSolvedList[index]) currentProgress.setValue(++progressState);
+        submitList[index] = submitWord;
         updateSolvedList.setValue(index);
 
         index = ++index % totalQuestionNumber;

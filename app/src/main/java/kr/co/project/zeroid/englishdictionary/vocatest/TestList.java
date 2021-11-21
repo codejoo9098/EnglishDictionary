@@ -1,22 +1,34 @@
 package kr.co.project.zeroid.englishdictionary.vocatest;
 
+import java.util.HashMap;
+
+import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
+
 public class TestList {
-    public static String[] questionList = {"apple", "banana", "hello"};
+    public static HashMap<String, HashMap<String, String>> totalData = null;
+    public static String[] questionList;
     public static int totalQuestionNumber;
     public static String[] answerList;
     public static String[] submitList;
     public static Boolean[] isSolvedList;
 
     static {
-        totalQuestionNumber = questionList.length;
+        totalData = SingletonVocaMap.getInstance();
+    }
+
+    public static void setKoreanData() {
+        int index = 0;
+        totalQuestionNumber = totalData.size();
+
+        questionList = new String[totalQuestionNumber];
         answerList = new String[totalQuestionNumber];
         submitList = new String[totalQuestionNumber];
         isSolvedList = new Boolean[totalQuestionNumber];
-    }
 
-    public static void resetData() {
-        for (int i = 0; i < totalQuestionNumber; i++) {
-            isSolvedList[i] = false;
+        for (String key : totalData.keySet()) {
+            questionList[index] = key;
+            isSolvedList[index] = false;
+            index++;
         }
     }
 }

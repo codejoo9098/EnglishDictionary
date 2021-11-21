@@ -45,7 +45,10 @@ public class KoreanTestActivity extends AppCompatActivity {
 
         viewModel.updateSolvedList.observe(this, new Observer<Integer>() {
             @Override
-            public void onChanged(Integer position) { adapter.updateList(position); }
+            public void onChanged(Integer position) {
+                adapter.updateList(position);
+                binding.inputKorean.setText("");
+            }
         });
 
         viewModel.isFinished.observe(this, new Observer<Boolean>() {
