@@ -32,7 +32,8 @@ public class MyVocaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_voca);
-
+        Log.d("firekmj","나만의단어장액티비티 생성");
+        MyWordFragment.isFirst=0; //처음 액티비티 시작시에는 통신으로 최신화하기.
         frameLayout=findViewById(R.id.frame);
 
         myWord= MyWordFragment.newInstance();
@@ -57,7 +58,6 @@ public class MyVocaActivity extends AppCompatActivity {
                     case R.id.myWord:
                         searchPage=0;
                         myWordPage=1;
-                        //매번 프래그먼트 객체 초기화하지말고 그냥 교체만 하자.
                         getSupportFragmentManager().beginTransaction().replace(R.id.frame,myWord).commit();
                         break;
                     case R.id.wrongNote:

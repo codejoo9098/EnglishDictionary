@@ -13,9 +13,16 @@ import android.widget.Button;
 import android.widget.Toast;
 
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import kr.co.project.zeroid.englishdictionary.R;
 
 public class DeleteDialogActivity extends AppCompatActivity {
+     FirebaseDatabase database = FirebaseDatabase.getInstance();
+     DatabaseReference databaseReference = database.getReference();
+     DatabaseReference myRef=databaseReference.child("users").child(FirebaseAuth.getInstance().getUid());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +46,10 @@ public class DeleteDialogActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 int num=intent.getIntExtra("num",-1);
-                Log.d("aaa",""+num);
-                MyAdapter.itemList.remove(num-1);
+                myRef.child(MyWordFragment.adapter.getItemList().get(num - 1).englishWord).removeValue();
+                MyWordFragment.adapter.getItemList().remove(num-1);
                 MyWordFragment.adapter.notifyDataSetChanged();
+
                 finish();
             }
         });

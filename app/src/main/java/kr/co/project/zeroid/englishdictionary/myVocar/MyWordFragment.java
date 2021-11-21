@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -44,6 +45,7 @@ public class MyWordFragment extends Fragment {
     }
 
     public static MyWordFragment newInstance() {
+        Log.d("firekmj","newInstance");
         MyWordFragment fragment = new MyWordFragment(); //자동으로 기본생성자 호출
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -51,12 +53,21 @@ public class MyWordFragment extends Fragment {
     }
 
     static FragmentActivity fragmentActivity;
-    RecyclerView rc;
+    static RecyclerView rc;
     static public MyAdapter adapter;
 
     static FirebaseDatabase database = FirebaseDatabase.getInstance();
     static DatabaseReference databaseReference = database.getReference();
     static DatabaseReference myRef=databaseReference.child("users").child(FirebaseAuth.getInstance().getUid());
+
+    static ArrayList<WordAndMean> stay_remember;
+    static int isFirst=0;
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d("firekmj","프래그먼트 크리에이트");
+        //SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,19 +77,28 @@ public class MyWordFragment extends Fragment {
         rc = view.findViewById(R.id.myWordRecyclerView);
         adapter = new MyAdapter();
         fragmentActivity = getActivity();
+        Log.d("firekmj","onCreateView");
+        //myRef=databaseReference.child("users").child(FirebaseAuth.getInstance().getUid());
+        if (isFirst==0) {
+            Log.d("firekmj","처음임");
+            isFirst++;
+            HashMap<String, HashMap<String, String>> singletonVocaMap=SingletonVocaMap.getInstance(view.getContext()); //최근에 통신으로 받아온걸 받음.
 
-        HashMap<String, HashMap<String, String>> singletonVocaMap = SingletonVocaMap.getInstance(view.getContext()); //최근에 통신으로 받아온걸 받음.
-
-        for (String english_key : singletonVocaMap.keySet()) {
-            ArrayList<String> arr = new ArrayList<>();
-            for(int num=1; num<=singletonVocaMap.get(english_key).size();num++){
-                arr.add(singletonVocaMap.get(english_key).get("-"+num));
+            for (String english_key : singletonVocaMap.keySet()) {
+                ArrayList<String> arr = new ArrayList<>();
+                for (int num = 1; num <= singletonVocaMap.get(english_key).size(); num++) {
+                    arr.add(singletonVocaMap.get(english_key).get("-" + num));
+                }
+                WordAndMean wam = new WordAndMean(english_key, arr, 0);
+                //Log.d("firekmj",""+wam);
+                adapter.addItem(wam);
             }
-            WordAndMean wam=new WordAndMean(english_key,arr,0);
-            //Log.d("firekmj",""+wam);
-            adapter.addItem(wam);
         }
-
+        else{
+            Log.d("firekmj","처음이아님");
+            adapter.setItemList(stay_remember);
+            Log.d("firekmj","처음이아님"+adapter.getItemList().get(0).mean);
+        }
         rc.setLayoutManager(new LinearLayoutManager(getActivity()));
         rc.setAdapter(adapter);
 
@@ -88,6 +108,24 @@ public class MyWordFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onPause() {
+        stay_remember=adapter.getItemList();
+        Log.d("firekmj","프래그먼트 정지");
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        Log.d("firekmj","프래그먼트 스탑");
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d("firekmj","프래그먼트 파괴");
+        super.onDestroy();
+    }
 
     static AlertDialog customDialog; //다이얼로그 안에서 이벤트 처리를 위한 다이얼로그 객체
     static LayoutInflater inflater1; //이게 프래그먼트 인자인 inflater랑 같아서 오류난거였음ㅠㅠ 바꾸니까 되네
@@ -106,7 +144,7 @@ public class MyWordFragment extends Fragment {
         TextView add = customDialogView.findViewById(R.id.add_mean);
         Spinner spinner = customDialogView.findViewById(R.id.mean_spinner);
         int num = Integer.parseInt(no.getText().toString());
-        ArrayList<String> meanSpinner = MyAdapter.itemList.get(num - 1).getMean();
+        ArrayList<String> meanSpinner = adapter.getItemList().get(num - 1).getMean();
         Log.d("aaa", "" + meanSpinner);
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(customDialogView.getContext(), android.R.layout.simple_spinner_item, meanSpinner);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -114,12 +152,12 @@ public class MyWordFragment extends Fragment {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                wantEditMean = MyAdapter.itemList.get(num - 1).mean.get(i);
+                wantEditMean = adapter.getItemList().get(num - 1).mean.get(i);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-                wantEditMean = MyAdapter.itemList.get(num - 1).mean.get(0);
+                wantEditMean = adapter.getItemList().get(num - 1).mean.get(0);
             }
         });
         DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
@@ -144,10 +182,10 @@ public class MyWordFragment extends Fragment {
                     }
                     //
                     if (!("".equals(addMean))) {
-                        MyAdapter.itemList.get(num - 1).mean.add(addMean);
+                        adapter.getItemList().get(num - 1).mean.add(addMean);
                         adapter.notifyDataSetChanged();
-                        int new_add_num=MyAdapter.itemList.get(num - 1).mean.size();
-                        myRef.child(MyAdapter.itemList.get(num - 1).englishWord).child("-"+new_add_num).setValue(addMean);
+                        int new_add_num=adapter.getItemList().get(num - 1).mean.size();
+                        myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-"+new_add_num).setValue(addMean);
                         //db수정.
                     }
                 }
@@ -181,25 +219,29 @@ public class MyWordFragment extends Fragment {
 
     static void editKoreanMean(int isDeleteMean, int num) {
         if (isDeleteMean == 0) {  //수정하는 경우
-            int j = MyAdapter.itemList.get(num - 1).mean.indexOf(wantEditMean); //바꾸려는 뜻의 뜻 배열인덱스 찾기
-            MyAdapter.itemList.get(num - 1).mean.set(j, editMean);
+            int j = adapter.getItemList().get(num - 1).mean.indexOf(wantEditMean); //바꾸려는 뜻의 뜻 배열인덱스 찾기
+            adapter.getItemList().get(num - 1).mean.set(j, editMean);
 
             //데이터베이스 통신으로 데이터 교체
-            myRef.child(MyAdapter.itemList.get(num - 1).englishWord).child("-"+(j+1)).setValue(editMean); //교체
+            myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-"+(j+1)).setValue(editMean); //교체
 
         } else {
-            int j = MyAdapter.itemList.get(num - 1).mean.indexOf(wantEditMean); //삭제하려는 뜻의 뜻 배열인덱스 찾기
-            MyAdapter.itemList.get(num - 1).mean.remove(j);
-
+            int j = adapter.getItemList().get(num - 1).mean.indexOf(wantEditMean); //삭제하려는 뜻의 뜻 배열인덱스 찾기
+            Log.d("firekmj","뜻 삭제 전"+adapter.getItemList().get(num-1).mean);
+            adapter.getItemList().get(num - 1).mean.remove(j);
+            Log.d("firekmj","뜻 삭제"+j+"번째인덱스,"+adapter.getItemList().get(num-1).mean);
             //데이터베이스에서 삭제
-            myRef.child(MyAdapter.itemList.get(num - 1).englishWord).child("-"+(j+1)).removeValue();
+            myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-"+(j+1)).removeValue();
 
             //데이터베이스 키값 다시 정렬. 이유: 중간 키가 사라지면 키값이 안이어짐.
-            for(int i=0;i<MyAdapter.itemList.get(num-1).mean.size();i++){
-                myRef.child(MyAdapter.itemList.get(num - 1).englishWord).child("-"+(i+1)).setValue(MyAdapter.itemList.get(num-1).mean.get(i));
+            for(int i=0;i<adapter.getItemList().get(num-1).mean.size();i++){
+                myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-"+(i+1)).setValue(adapter.getItemList().get(num-1).mean.get(i));
             }
-            myRef.child(MyAdapter.itemList.get(num - 1).englishWord).child("-"+(MyAdapter.itemList.get(num-1).mean.size()+1)).removeValue();
+            myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-"+(adapter.getItemList().get(num-1).mean.size()+1)).removeValue();
         }
+        rc.setAdapter(adapter);
         adapter.notifyDataSetChanged(); //어댑터 다시 시작(뷰 다시 채워넣음)
+        Log.d("firekmj","뜻 삭제 후 갱신"+adapter.getItemList().get(num-1).mean);
+
     }
 }
