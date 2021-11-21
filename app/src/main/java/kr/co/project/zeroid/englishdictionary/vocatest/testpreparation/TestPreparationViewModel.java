@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import kr.co.project.zeroid.englishdictionary.etc.SingleLiveEvent;
+import kr.co.project.zeroid.englishdictionary.vocatest.TestList;
 
 public class TestPreparationViewModel extends ViewModel {
     MutableLiveData<String> second;
@@ -22,6 +23,7 @@ public class TestPreparationViewModel extends ViewModel {
         isFinished = new MutableLiveData<>();
         second = new MutableLiveData<>();
         second.setValue("5");
+        TestList.resetData();
 
         new Thread(new Runnable() {
             @Override
