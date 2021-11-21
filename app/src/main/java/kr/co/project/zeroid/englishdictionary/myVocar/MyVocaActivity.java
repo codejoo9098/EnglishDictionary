@@ -13,8 +13,11 @@ import android.widget.FrameLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import kr.co.project.zeroid.englishdictionary.R;
+import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
 
 public class MyVocaActivity extends AppCompatActivity {
     static BottomNavigationView bottomNavigationView;
@@ -24,6 +27,7 @@ public class MyVocaActivity extends AppCompatActivity {
     Fragment wrongNote;
     static int searchPage;
     static int myWordPage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,5 +71,10 @@ public class MyVocaActivity extends AppCompatActivity {
         });
     }
 
+
+    public void finish_myVocaActivity(View view){
+
+        finish();
+    }
 
 }

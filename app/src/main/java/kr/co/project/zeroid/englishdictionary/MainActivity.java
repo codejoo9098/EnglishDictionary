@@ -2,6 +2,7 @@ package kr.co.project.zeroid.englishdictionary;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import kr.co.project.zeroid.englishdictionary.addVoca.AddVocaActivity;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivityMainBinding;
+import kr.co.project.zeroid.englishdictionary.myVocar.MyVocaActivity;
 import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
 import kr.co.project.zeroid.englishdictionary.vocatest.settingvoca.SettingVocaTestActivity;
 
@@ -183,4 +185,20 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+    public void start_myVocaActivity(View view){
+        //여기서 최신화 안하면 시작하자마자
+        //SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
+        startActivity(new Intent(this, MyVocaActivity.class));
+    }
+
+    @Override
+    protected void onRestart() {
+        Log.d("firekmj","리스타트");
+        SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
+        //여기서 해야하는 이유.
+        // 나만의 단어장에서 바뀐 내용이 통신으로 데이터베이스가 최신화됐는데,
+        // 메인액티비티로 돌아가서 다른 액티비티로 들어가면 최신화가 안된 SingletonVocaMap이 있다.
+        super.onRestart();
+    }
 }
+

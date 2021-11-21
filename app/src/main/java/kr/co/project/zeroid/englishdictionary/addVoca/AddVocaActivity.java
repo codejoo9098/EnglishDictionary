@@ -211,6 +211,10 @@ public class AddVocaActivity extends AppCompatActivity {
     //현재 DB에 있는 로그인된 계정의 데이터를 전부 가져온다.
     private void getDataExample() {
         HashMap<String, HashMap<String,String>> singletonVocaMap=SingletonVocaMap.getInstance(getApplicationContext());
+        Log.d("firebase",""+singletonVocaMap.keySet());
+        //이렇게 하면 apple의 -1 값인 애플이 리턴됨.
+        //keyset은 키값들을 가져올수있다.
+
         AlertDialog.Builder dialog=new AlertDialog.Builder(AddVocaActivity.this);
         String dialogString="";
         if(!singletonVocaMap.isEmpty()) {
