@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import kr.co.project.zeroid.englishdictionary.R;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyWordViewHolder> {
-    static public ArrayList<WordAndMean> itemList;
+    private ArrayList<WordAndMean> itemList;
     private MyWordViewHolder holder; //뷰홀더 객체생성.
 
     public MyAdapter(){
@@ -29,6 +29,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyWordViewHolder> 
         holder=new MyWordViewHolder(view);
         return holder;
     } //껍데기 만들기
+
+    public ArrayList<WordAndMean> getItemList() {
+        return itemList;
+    }
+
+    public void setItemList(ArrayList<WordAndMean> itemList) {
+        this.itemList = itemList;
+    }
 
     @Override
     public int getItemCount() {

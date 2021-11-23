@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,29 +47,9 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
-        ArrayList<WordAndMean> db = new ArrayList<>();
+        ArrayList<WordAndMean> db = MyWordFragment.stay_remember;
 
-        ArrayList<String> arr = new ArrayList<>();
-        arr.add("바나나");
-        WordAndMean wam1 = new WordAndMean("Banana", arr, 0);
-        db.add(wam1);
 
-        ArrayList<String> arr2 = new ArrayList<>();
-        arr2.add("의미하다");
-        arr2.add("사악한");
-        WordAndMean wam2 = new WordAndMean("Mean", arr2, 0);
-        db.add(wam2);
-
-        ArrayList<String> arr3 = new ArrayList<>();
-        arr3.add("사과");
-        WordAndMean wam3 = new WordAndMean("Apple", arr3, 0);
-        db.add(wam3);
-
-        ArrayList<String> arr4 = new ArrayList<>();
-        arr4.add("의미하다");
-        arr4.add("사악한");
-        WordAndMean wam4 = new WordAndMean("Mean", arr4, 0);
-        db.add(wam4);
 
 
         searchView = view.findViewById(R.id.search_view);
