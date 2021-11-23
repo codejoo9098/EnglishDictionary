@@ -33,6 +33,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import kr.co.project.zeroid.englishdictionary.addVoca.AddVocaActivity;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivityMainBinding;
+import kr.co.project.zeroid.englishdictionary.myVocar.MyVocaActivity;
 import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
 import kr.co.project.zeroid.englishdictionary.vocatest.settingvoca.SettingVocaTestActivity;
 
@@ -75,6 +76,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChanged(Void unused) {
                 navigateToVocaTestPage();
+            }
+        });
+
+        viewModel.navigateToMyVoca.observe(this, new Observer<Void>() {
+            @Override
+            public void onChanged(Void unused) {
+                navigateToMyVocaPage();
             }
         });
 
@@ -141,6 +149,11 @@ public class MainActivity extends AppCompatActivity {
 
     void navigateToVocaTestPage() {
         Intent intent = new Intent(this, SettingVocaTestActivity.class);
+        startActivity(intent);
+    }
+
+    void navigateToMyVocaPage() {
+        Intent intent = new Intent(this, MyVocaActivity.class);
         startActivity(intent);
     }
 
