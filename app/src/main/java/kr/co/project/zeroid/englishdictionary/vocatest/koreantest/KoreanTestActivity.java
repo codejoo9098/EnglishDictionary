@@ -13,6 +13,8 @@ import android.view.View;
 import kr.co.project.zeroid.englishdictionary.R;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivityKoreanTestBinding;
 import kr.co.project.zeroid.englishdictionary.etc.MyViewModelFactory;
+import kr.co.project.zeroid.englishdictionary.etc.QuestionAdapter;
+import kr.co.project.zeroid.englishdictionary.vocatest.TestList;
 
 public class KoreanTestActivity extends AppCompatActivity {
     ActivityKoreanTestBinding binding;
@@ -38,16 +40,22 @@ public class KoreanTestActivity extends AppCompatActivity {
         binding.setViewModel(viewModel);
         viewModel.minute.setValue(String.valueOf(minute));
         viewModel.second.setValue(String.valueOf(second));
+        QuestionAdapter adapter = new QuestionAdapter(TestList.isSolvedList, viewModel);
+        binding.wordSelectContainer.setAdapter(adapter);
+
+        viewModel.updateSolvedList.observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer position) {
+                adapter.updateList(position);
+                binding.inputKorean.setText("");
+            }
+        });
 
         viewModel.isFinished.observe(this, new Observer<Boolean>() {
             @Override
-            public void onChanged(Boolean aBoolean) {
-                navigateToResultPage();
-            }
+            public void onChanged(Boolean aBoolean) { navigateToResultPage(); }
         });
     }
 
-    private void navigateToResultPage() {
-        finish();
-    }
+    private void navigateToResultPage() { finish(); }
 }

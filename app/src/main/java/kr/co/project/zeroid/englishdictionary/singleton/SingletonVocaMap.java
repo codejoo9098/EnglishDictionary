@@ -18,7 +18,7 @@ public class SingletonVocaMap {
     private static HashMap<String,HashMap<String,String>> singletonVocaMap = null;
     private static FirebaseDatabase database = FirebaseDatabase.getInstance();
     private SingletonVocaMap() { }
-    public static synchronized HashMap<String,HashMap<String,String>> getInstance(Context context) {
+    public static synchronized HashMap<String,HashMap<String,String>> getInstance() {
         if (singletonVocaMap == null) {
             HashMap<String,HashMap<String,String>> vocaMap = new HashMap<String, HashMap<String,String>>();
             singletonVocaMap = vocaMap;
