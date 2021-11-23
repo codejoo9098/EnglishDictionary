@@ -1,15 +1,11 @@
 package kr.co.project.zeroid.englishdictionary.vocatest.testpreparation;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import kr.co.project.zeroid.englishdictionary.etc.SingleLiveEvent;
+import kr.co.project.zeroid.englishdictionary.vocatest.TestList;
 
 public class TestPreparationViewModel extends ViewModel {
     MutableLiveData<String> second;

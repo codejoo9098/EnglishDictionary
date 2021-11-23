@@ -82,7 +82,7 @@ public class MyWordFragment extends Fragment {
         if (isFirst==0) {
             Log.d("firekmj","처음임");
             isFirst++;
-            HashMap<String, HashMap<String, String>> singletonVocaMap=SingletonVocaMap.getInstance(view.getContext()); //최근에 통신으로 받아온걸 받음.
+            HashMap<String, HashMap<String, String>> singletonVocaMap=SingletonVocaMap.getInstance(); //최근에 통신으로 받아온걸 받음.
 
             for (String english_key : singletonVocaMap.keySet()) {
                 ArrayList<String> arr = new ArrayList<>();

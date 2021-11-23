@@ -29,16 +29,20 @@
             android:exported="true"
             android:label="확인"
             android:theme="@style/Theme.AppCompat.DayNight.Dialog.Alert"
+            android:screenOrientation="portrait"
             />
         <activity
             android:name=".myVocar.MyVocaActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".addVoca.AddVocaActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

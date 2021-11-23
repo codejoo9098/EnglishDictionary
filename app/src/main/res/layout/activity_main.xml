@@ -85,12 +85,12 @@
             android:textColor="@color/white"
             android:textSize="16sp"
             android:background="@drawable/blue_button"
+            android:onClick="@{() -> viewModel.onMyVocaButtonClick()}"
             app:backgroundTint="@null"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/searchVocaButton"
-            app:layout_constraintBottom_toTopOf="@+id/vocaTestButton"
-            android:onClick="start_myVocaActivity"/>
+            app:layout_constraintBottom_toTopOf="@+id/vocaTestButton" />
 
         <Button
             android:id="@+id/vocaTestButton"

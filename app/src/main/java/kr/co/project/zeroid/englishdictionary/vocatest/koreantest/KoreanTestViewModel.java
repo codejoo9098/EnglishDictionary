@@ -1,18 +1,24 @@
 package kr.co.project.zeroid.englishdictionary.vocatest.koreantest;
 
-import android.app.Application;
 import android.util.Log;
+import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.ArrayList;
+import kr.co.project.zeroid.englishdictionary.etc.SingleLiveEvent;
+import kr.co.project.zeroid.englishdictionary.vocatest.TestList;
 
 public class KoreanTestViewModel extends ViewModel {
     final static int ONE_MINUTE = 60;
+
+    public String[] questionList = TestList.questionList;
+    public String[] submitList = TestList.submitList;
+    public int totalQuestionNumber = TestList.totalQuestionNumber;
+    public Boolean[] isSolvedList = TestList.isSolvedList;
+
+    Thread thread;
     MutableLiveData<String> minute;
     public LiveData<String> getMinute() { return minute; }
     MutableLiveData<String> second;
@@ -21,35 +27,35 @@ public class KoreanTestViewModel extends ViewModel {
     public LiveData<String> getDisplayWord() { return displayWord; }
     MutableLiveData<Integer> currentProgress;
     public LiveData<Integer> getCurrentProgress() { return currentProgress; }
-    MutableLiveData<String> currentWord;
-    public LiveData<String> getCurrentWord() { return currentWord; }
+    MutableLiveData<String> currentQuestionNumber;
+    public LiveData<String> getCurrentQuestionNumber() { return currentQuestionNumber; }
     MutableLiveData<Boolean> isFinished;
     public LiveData<Boolean> getIsFinished() { return isFinished; }
-    ArrayList<String> wordList; // 나중에 교체 예정
-    int questionNumber;
-    public int getQuestionNumber() { return questionNumber; }
-    int completeWord = 0;
+    MutableLiveData<Integer> currentWordIndex;
+    public LiveData<Integer> getCurrentWordIndex() { return currentWordIndex; }
+    SingleLiveEvent<Integer> updateSolvedList;
+    String submitWord;
     int totalTime;
+    int progressState = 0;
 
     public KoreanTestViewModel(int inputMinute, int inputSecond) {
+
         minute = new MutableLiveData<>();
         second = new MutableLiveData<>();
         displayWord = new MutableLiveData<>();
         currentProgress = new MutableLiveData<>();
-        currentWord = new MutableLiveData<>();
+        currentQuestionNumber = new MutableLiveData<>();
+        currentWordIndex = new MutableLiveData<>();
+        updateSolvedList = new SingleLiveEvent<>();
         isFinished = new MutableLiveData<>();
-        wordList = new ArrayList<>();
 
-        wordList.add("apple");
-        wordList.add("banana");
-        wordList.add("hello");
-
-        displayWord.setValue(wordList.get(0));
-        questionNumber = wordList.size();
-        currentWord.setValue("1/" + questionNumber);
+        currentWordIndex.setValue(0);
+        displayWord.setValue(questionList[0]);
+        currentQuestionNumber.setValue("1/" + totalQuestionNumber);
 
         totalTime = inputMinute * ONE_MINUTE + inputSecond;
-        new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
+
             @Override
             public void run() {
                 int countMinute = inputMinute;
@@ -75,13 +81,37 @@ public class KoreanTestViewModel extends ViewModel {
 
                 isFinished.postValue(true);
             }
-        }).start();
+        });
+
+        thread.start();
+    }
+
+    public void onAnswerChanged(CharSequence s, int start, int before, int count) {
+        if (count != 0) {
+            submitWord = s.toString();
+        }
     }
 
     public void onClickCompleteWord() {
-        completeWord++;
-        currentProgress.setValue(completeWord);
-        currentWord.setValue((completeWord % questionNumber + 1) + "/" + questionNumber);
-        displayWord.setValue(wordList.get(completeWord % questionNumber));
+        int index = currentWordIndex.getValue();
+        if (!isSolvedList[index]) currentProgress.setValue(++progressState);
+        submitList[index] = submitWord;
+        updateSolvedList.setValue(index);
+
+        index = ++index % totalQuestionNumber;
+
+        currentWordIndex.setValue(index);
+        currentQuestionNumber.setValue((index % totalQuestionNumber + 1) + "/" + totalQuestionNumber);
+        displayWord.setValue(questionList[index % totalQuestionNumber]);
+    }
+
+    public void onClickQuestion(int pos) {
+        currentWordIndex.setValue(pos);
+        currentQuestionNumber.setValue((pos + 1) +"/" + totalQuestionNumber);
+        displayWord.setValue(questionList[pos]);
+    }
+
+    public void onSubmitButtonClick() {
+        isFinished.setValue(true);
     }
 }

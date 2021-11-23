@@ -79,6 +79,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        viewModel.navigateToMyVoca.observe(this, new Observer<Void>() {
+            @Override
+            public void onChanged(Void unused) {
+                navigateToMyVocaPage();
+            }
+        });
+
         // 파이어베이스 인증 객체 선언
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -142,6 +149,11 @@ public class MainActivity extends AppCompatActivity {
 
     void navigateToVocaTestPage() {
         Intent intent = new Intent(this, SettingVocaTestActivity.class);
+        startActivity(intent);
+    }
+
+    void navigateToMyVocaPage() {
+        Intent intent = new Intent(this, MyVocaActivity.class);
         startActivity(intent);
     }
 
