@@ -15,6 +15,7 @@ import kr.co.project.zeroid.englishdictionary.databinding.ActivityKoreanTestBind
 import kr.co.project.zeroid.englishdictionary.etc.MyViewModelFactory;
 import kr.co.project.zeroid.englishdictionary.etc.QuestionAdapter;
 import kr.co.project.zeroid.englishdictionary.vocatest.TestList;
+import kr.co.project.zeroid.englishdictionary.vocatest.testresult.TestResultActivity;
 
 public class KoreanTestActivity extends AppCompatActivity {
     ActivityKoreanTestBinding binding;
@@ -57,5 +58,8 @@ public class KoreanTestActivity extends AppCompatActivity {
         });
     }
 
-    private void navigateToResultPage() { finish(); }
+    private void navigateToResultPage() {
+        Intent intent = new Intent(this, TestResultActivity.class);
+        startActivity(intent);
+    }
 }
