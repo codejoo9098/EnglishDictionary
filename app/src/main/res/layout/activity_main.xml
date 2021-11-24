@@ -90,7 +90,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/searchVocaButton"
-            app:layout_constraintBottom_toTopOf="@+id/vocaTestButton"/>
+            app:layout_constraintBottom_toTopOf="@+id/vocaTestButton" />
 
         <Button
             android:id="@+id/vocaTestButton"
