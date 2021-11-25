@@ -34,12 +34,15 @@ public class MyVocaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my_voca);
         Log.d("firekmj","나만의단어장액티비티 생성");
         MyWordFragment.isFirst=0; //처음 액티비티 시작시에는 통신으로 최신화하기.
+        WrongNoteFragment.isWrongNoteFirst=0;
+
         frameLayout=findViewById(R.id.frame);
 
         myWord= MyWordFragment.newInstance();
         wrongNote= WrongNoteFragment.newInstance();
         bottomNavigationView=findViewById(R.id.BottomNavigation);
         bottomNavigationView.setSelectedItemId(R.id.myWord); //초기 선택 바텀네비게이션뷰 아이템.
+
 
 
         getSupportFragmentManager().beginTransaction().replace(R.id.frame,myWord).commit();
@@ -73,8 +76,17 @@ public class MyVocaActivity extends AppCompatActivity {
 
 
     public void finish_myVocaActivity(View view){
-
         finish();
     }
 
+    public void wordAdd(View view){
+        MyWordFragment.word_Add();
+    }
+
+    @Override
+    protected void onDestroy() {
+        MyWordFragment.stay_remember=null;
+        WrongNoteFragment.wrongNoteRemember=null;
+        super.onDestroy();
+    }
 }

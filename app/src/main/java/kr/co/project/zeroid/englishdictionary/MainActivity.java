@@ -203,6 +203,14 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, MyVocaActivity.class));
     }
 
+
+    @Override
+    protected void onStart() {
+        SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
+        //이건 어떤가?
+        super.onStart();
+    }
+
     @Override
     protected void onRestart() {
         Log.d("firekmj","리스타트");

@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,42 +66,64 @@ public class MyWordFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         Log.d("firekmj","프래그먼트 크리에이트");
-        //SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
         super.onCreate(savedInstanceState);
     }
 
+    private Thread pullDataThread;
+    private Handler mHandler=new Handler();
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_word, container, false);
         rc = view.findViewById(R.id.myWordRecyclerView);
-        adapter = new MyAdapter();
         fragmentActivity = getActivity();
         Log.d("firekmj","onCreateView");
-        //myRef=databaseReference.child("users").child(FirebaseAuth.getInstance().getUid());
-        if (isFirst==0) {
-            Log.d("firekmj","처음임");
-            isFirst++;
-            HashMap<String, HashMap<String, String>> singletonVocaMap=SingletonVocaMap.getInstance(); //최근에 통신으로 받아온걸 받음.
 
-            for (String english_key : singletonVocaMap.keySet()) {
-                ArrayList<String> arr = new ArrayList<>();
-                for (int num = 1; num <= singletonVocaMap.get(english_key).size(); num++) {
-                    arr.add(singletonVocaMap.get(english_key).get("-" + num));
+        if (isFirst==0) {
+            pullDataThread=new Thread("Pull Data"){
+                @Override
+                public void run() {
+                    SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        ;
+                    }
+                    Log.d("firekmj","작업스레드 안입니다.");
+                    isFirst++;
+                    HashMap<String, HashMap<String, String>> singletonVocaMap=SingletonVocaMap.getInstance(); //최근에 통신으로 받아온걸 받음.
+                    adapter = new MyAdapter();
+                    for (String english_key : singletonVocaMap.keySet()) {
+                        ArrayList<String> arr = new ArrayList<>();
+                        for (int num = 1; num <= (singletonVocaMap.get(english_key).size()-1); num++) {
+                            arr.add(singletonVocaMap.get(english_key).get("-" + num));
+                        }
+                        int wc=Integer.parseInt(singletonVocaMap.get(english_key).get("-틀린횟수"));
+                        WordAndMean wam = new WordAndMean(english_key, arr, wc);
+                        //Log.d("firekmj",""+wam);
+                        adapter.addItem(wam);
+                    }
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d("firekmj","작업스레드에서 메인스레드에게 화면 변화 요청");
+                            rc.setLayoutManager(new LinearLayoutManager(getActivity()));
+                            rc.setAdapter(adapter);
+                        }
+                    });
                 }
-                WordAndMean wam = new WordAndMean(english_key, arr, 0);
-                //Log.d("firekmj",""+wam);
-                adapter.addItem(wam);
-            }
+            };
+            pullDataThread.start();
         }
         else{
+            adapter = new MyAdapter();
             Log.d("firekmj","처음이아님");
             adapter.setItemList(stay_remember);
             Log.d("firekmj","처음이아님"+adapter.getItemList().get(0).mean);
+            rc.setLayoutManager(new LinearLayoutManager(getActivity()));
+            rc.setAdapter(adapter);
         }
-        rc.setLayoutManager(new LinearLayoutManager(getActivity()));
-        rc.setAdapter(adapter);
 
         inflater1 = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         builder = new AlertDialog.Builder(getContext());
@@ -111,21 +134,11 @@ public class MyWordFragment extends Fragment {
     @Override
     public void onPause() {
         stay_remember=adapter.getItemList();
+        pullDataThread.interrupt();
         Log.d("firekmj","프래그먼트 정지");
         super.onPause();
     }
 
-    @Override
-    public void onStop() {
-        Log.d("firekmj","프래그먼트 스탑");
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.d("firekmj","프래그먼트 파괴");
-        super.onDestroy();
-    }
 
     static AlertDialog customDialog; //다이얼로그 안에서 이벤트 처리를 위한 다이얼로그 객체
     static LayoutInflater inflater1; //이게 프래그먼트 인자인 inflater랑 같아서 오류난거였음ㅠㅠ 바꾸니까 되네
@@ -143,9 +156,9 @@ public class MyWordFragment extends Fragment {
         TextView eg = customDialogView.findViewById(R.id.english_in_dialog);
         TextView add = customDialogView.findViewById(R.id.add_mean);
         Spinner spinner = customDialogView.findViewById(R.id.mean_spinner);
-        int num = Integer.parseInt(no.getText().toString());
+        int num = Integer.parseInt(no.getText().toString()); //다이얼로그를 호출한 항목이 몇번째인지
         ArrayList<String> meanSpinner = adapter.getItemList().get(num - 1).getMean();
-        Log.d("aaa", "" + meanSpinner);
+
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(customDialogView.getContext(), android.R.layout.simple_spinner_item, meanSpinner);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
@@ -160,6 +173,7 @@ public class MyWordFragment extends Fragment {
                 wantEditMean = adapter.getItemList().get(num - 1).mean.get(0);
             }
         });
+
         DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -233,7 +247,7 @@ public class MyWordFragment extends Fragment {
             //데이터베이스에서 삭제
             myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-"+(j+1)).removeValue();
 
-            //데이터베이스 키값 다시 정렬. 이유: 중간 키가 사라지면 키값이 안이어짐.
+            //데이터베이스내의 해당 단어의 의미 키값 다시 정렬. 이유: 중간 뜻의 숫자키가 사라지면 키값이 안이어짐.
             for(int i=0;i<adapter.getItemList().get(num-1).mean.size();i++){
                 myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-"+(i+1)).setValue(adapter.getItemList().get(num-1).mean.get(i));
             }
@@ -244,4 +258,9 @@ public class MyWordFragment extends Fragment {
         Log.d("firekmj","뜻 삭제 후 갱신"+adapter.getItemList().get(num-1).mean);
 
     }
+
+    static public void word_Add(){
+        fragmentActivity.startActivity(new Intent(fragmentActivity, AddWordDialogActivity.class));
+    }
+
 }
