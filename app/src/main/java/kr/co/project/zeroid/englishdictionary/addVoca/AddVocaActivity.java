@@ -63,6 +63,9 @@ public class AddVocaActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        Pattern onlyEnglish = Pattern.compile("^[a-zA-Z]+$");
+        Pattern onlyKorean=Pattern.compile("^[가-힣]+$");
+
         searchVocaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,8 +74,6 @@ public class AddVocaActivity extends AppCompatActivity {
                 //doInBackground
                 Observable.fromCallable(()->{
                     searchText= searchVocaEditText.getText().toString();
-                    Pattern onlyEnglish = Pattern.compile("^[a-zA-Z]+$");
-                    Pattern onlyKorean=Pattern.compile("^[가-힣]+$");
                     if(onlyEnglish.matcher(searchText).matches()) {
                         String result=searchEnglish(searchText);
                         resultArray=searchEnglishTrimResult(result);
@@ -125,7 +126,13 @@ public class AddVocaActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),"추가할 단어가 선택되지 않았습니다.",Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    addInputVocaListToFirebaseRealtimeDatabase(inputVocaList);
+                    if(onlyEnglish.matcher(searchText).matches()) {
+                        addInputVocaListToFirebaseRealtimeDatabaseOnlyEnglish(inputVocaList);
+                    } else if(onlyKorean.matcher(searchText).matches()) {
+                        addInputVocaListToFirebaseRealtimeDatabaseOnlyKorean(inputVocaList);
+                    } else {
+                        Toast.makeText(getApplicationContext(),"예상치 못한 오류가 발생했습니다. 다시 시도해 주세요.",Toast.LENGTH_SHORT);
+                    }
                     //단어 추가하고 다시 받아옴
                     SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
                     Toast.makeText(getApplicationContext(),"단어가 추가됬습니다.",Toast.LENGTH_SHORT).show();
@@ -136,7 +143,7 @@ public class AddVocaActivity extends AppCompatActivity {
         });
     }
 
-    private void addInputVocaListToFirebaseRealtimeDatabase(ArrayList<String> inputVocaList) {
+    private void addInputVocaListToFirebaseRealtimeDatabaseOnlyEnglish(ArrayList<String> inputVocaList) {
         DatabaseReference myRef=databaseReference.child("users").child(FirebaseAuth.getInstance().getUid()).child(searchText);
         //기존에 추가한 단어를 중복해서 추가할경우 기존에 저장한 값은 없어짐
         myRef.setValue(searchText);
@@ -146,6 +153,15 @@ public class AddVocaActivity extends AppCompatActivity {
             myRef.child("-"+index).setValue(inputVoca.trim());
             index++;
         }
+        myRef.child("-틀린횟수").setValue("0");
+    }
+
+    private void addInputVocaListToFirebaseRealtimeDatabaseOnlyKorean(ArrayList<String> inputVocaList) {
+        DatabaseReference myRef=databaseReference.child("users").child(FirebaseAuth.getInstance().getUid()).child(inputVocaList.get(0));
+        //기존에 추가한 단어를 중복해서 추가할경우 기존에 저장한 값은 없어짐
+        myRef.setValue(inputVocaList.get(0).trim());
+        myRef.child("-1").setValue(searchText);
+        myRef.child("-틀린횟수").setValue("0");
     }
 
     private String searchEnglish(String searchText) {
