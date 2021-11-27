@@ -1,34 +1,108 @@
 package kr.co.project.zeroid.englishdictionary.vocatest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import kr.co.project.zeroid.englishdictionary.etc.Result;
 import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
 
 public class TestList {
     public static HashMap<String, HashMap<String, String>> totalData = null;
+
     public static String[] questionList;
     public static int totalQuestionNumber;
-    public static String[] answerList;
+    public static ArrayList<String>[] answerList;
     public static String[] submitList;
     public static Boolean[] isSolvedList;
+
+    public static Boolean[] correctList;
+    public static int correctNumber = 0;
+    public static double correctRate = 0.0;
+    public static Result[] resultList;
 
     static {
         totalData = SingletonVocaMap.getInstance();
     }
 
-    public static void setKoreanData() {
+    public static void setKoreanQuestionList() {
         int index = 0;
         totalQuestionNumber = totalData.size();
 
         questionList = new String[totalQuestionNumber];
-        answerList = new String[totalQuestionNumber];
+        answerList = new ArrayList[totalQuestionNumber];
         submitList = new String[totalQuestionNumber];
         isSolvedList = new Boolean[totalQuestionNumber];
+        correctList = new Boolean[totalQuestionNumber];
+        resultList = new Result[totalQuestionNumber];
 
-        for (String key : totalData.keySet()) {
+        for (String key: totalData.keySet()) {
             questionList[index] = key;
             isSolvedList[index] = false;
             index++;
         }
+    }
+
+    public static void setKoreanAnswerList() {
+        int index;
+        HashMap<String, String> map;
+
+        for (int i = 0; i < totalQuestionNumber; i++) {
+            map = totalData.get(questionList[i]);
+            answerList[i] = new ArrayList<>();
+
+            if (map == null) {
+                answerList[i].add("데이터 없음");
+                continue;
+            }
+
+            for (String key: map.keySet()) {
+                if (!key.equals("틀린횟수")) {
+                    answerList[i].add(map.get(key));
+                    //index++;
+                }
+            }
+        }
+    }
+
+    public static void setCheckList() {
+        String userAnswer;
+
+        for (int i = 0; i < totalQuestionNumber; i++) {
+            submitList[i] = submitList[i].trim();
+
+            userAnswer = submitList[i];
+            correctList[i] = false;
+
+            for (String s: answerList[i]) {
+                if (userAnswer.equals(s)) {
+                    correctList[i] = true;
+                    correctNumber++;
+                    break;
+                }
+            }
+        }
+
+        correctRate = (double) correctNumber / totalQuestionNumber;
+    }
+
+    public static void setResultList() {
+        String problem;
+        String answer;
+        String userAnswer;
+
+        for (int i = 0; i < totalQuestionNumber; i++) {
+            StringBuilder temp = new StringBuilder();
+
+            problem = questionList[i];
+            for (String s: answerList[i]) {
+                temp.append(s).append("\n");
+            }
+            answer = temp.toString();
+            answer = answer.trim();
+            userAnswer = submitList[i];
+
+            resultList[i] = new Result(problem, answer, userAnswer, correctList[i]);
+        }
+
     }
 }

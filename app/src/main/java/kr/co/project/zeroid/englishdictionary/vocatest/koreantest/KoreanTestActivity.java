@@ -2,18 +2,16 @@ package kr.co.project.zeroid.englishdictionary.vocatest.koreantest;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
-import androidx.hilt.lifecycle.ViewModelFactoryModules;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 import kr.co.project.zeroid.englishdictionary.R;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivityKoreanTestBinding;
 import kr.co.project.zeroid.englishdictionary.etc.MyViewModelFactory;
-import kr.co.project.zeroid.englishdictionary.etc.QuestionAdapter;
+import kr.co.project.zeroid.englishdictionary.etc.KoreanQuestionListAdapter;
 import kr.co.project.zeroid.englishdictionary.vocatest.TestList;
 import kr.co.project.zeroid.englishdictionary.vocatest.testresult.TestResultActivity;
 
@@ -41,7 +39,7 @@ public class KoreanTestActivity extends AppCompatActivity {
         binding.setViewModel(viewModel);
         viewModel.minute.setValue(String.valueOf(minute));
         viewModel.second.setValue(String.valueOf(second));
-        QuestionAdapter adapter = new QuestionAdapter(TestList.isSolvedList, viewModel);
+        KoreanQuestionListAdapter adapter = new KoreanQuestionListAdapter(TestList.isSolvedList, viewModel);
         binding.wordSelectContainer.setAdapter(adapter);
 
         viewModel.updateSolvedList.observe(this, new Observer<Integer>() {

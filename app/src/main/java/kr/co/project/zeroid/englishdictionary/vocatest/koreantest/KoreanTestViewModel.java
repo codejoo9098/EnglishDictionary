@@ -39,7 +39,6 @@ public class KoreanTestViewModel extends ViewModel {
     int progressState = 0;
 
     public KoreanTestViewModel(int inputMinute, int inputSecond) {
-
         minute = new MutableLiveData<>();
         second = new MutableLiveData<>();
         displayWord = new MutableLiveData<>();

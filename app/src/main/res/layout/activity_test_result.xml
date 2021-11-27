@@ -3,6 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="viewModel"
+            type="kr.co.project.zeroid.englishdictionary.vocatest.testresult.TestResultViewModel" />
+
+    </data>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -107,6 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
+                android:text="@{viewModel.totalQuestion}"
                 tools:text="4"
                 style="@style/big_text"
                 app:layout_constraintTop_toBottomOf="@id/result_list_container"
@@ -132,6 +141,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:textColor="@color/blue_title"
+                android:text="@{viewModel.correctQuestion}"
                 tools:text="3"
                 style="@style/big_text"
                 app:layout_constraintTop_toBottomOf="@id/total_question_number"
@@ -156,6 +166,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:textColor="@color/blue_title"
+                android:text="@{viewModel.correctRate}"
                 tools:text="75%"
                 style="@style/big_text"
                 app:layout_constraintTop_toBottomOf="@id/correct_question_number"
