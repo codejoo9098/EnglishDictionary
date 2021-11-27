@@ -74,6 +74,7 @@ public class AddVocaActivity extends AppCompatActivity {
                 //doInBackground
                 Observable.fromCallable(()->{
                     searchText= searchVocaEditText.getText().toString();
+                    searchText=searchText.substring(0,1).toUpperCase()+searchText.substring(1,searchText.length()).toLowerCase();
                     if(onlyEnglish.matcher(searchText).matches()) {
                         String result=searchEnglish(searchText);
                         resultArray=searchEnglishTrimResult(result);

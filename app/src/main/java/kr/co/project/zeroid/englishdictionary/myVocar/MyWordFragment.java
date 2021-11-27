@@ -32,6 +32,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import kr.co.project.zeroid.englishdictionary.R;
@@ -84,9 +85,16 @@ public class MyWordFragment extends Fragment {
             pullDataThread=new Thread("Pull Data"){
                 @Override
                 public void run() {
-                    SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
+                    Thread singleVocaRead=new Thread("Single Read"){
+                        @Override
+                        public void run() {
+                            SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
+                        }
+                    };
+                    singleVocaRead.start();
                     try {
                         Thread.sleep(1000);
+                        singleVocaRead.interrupt();
                     } catch (InterruptedException e) {
                         ;
                     }
@@ -100,10 +108,12 @@ public class MyWordFragment extends Fragment {
                             arr.add(singletonVocaMap.get(english_key).get("-" + num));
                         }
                         int wc=Integer.parseInt(singletonVocaMap.get(english_key).get("-틀린횟수"));
+                        //String eg=english_key.substring(0,1).toUpperCase()+english_key.substring(1,english_key.length());
                         WordAndMean wam = new WordAndMean(english_key, arr, wc);
                         //Log.d("firekmj",""+wam);
                         adapter.addItem(wam);
                     }
+                    Collections.sort(adapter.getItemList(),new EnglishComparator());
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -118,9 +128,7 @@ public class MyWordFragment extends Fragment {
         }
         else{
             adapter = new MyAdapter();
-            Log.d("firekmj","처음이아님");
             adapter.setItemList(stay_remember);
-            Log.d("firekmj","처음이아님"+adapter.getItemList().get(0).mean);
             rc.setLayoutManager(new LinearLayoutManager(getActivity()));
             rc.setAdapter(adapter);
         }
@@ -212,6 +220,8 @@ public class MyWordFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 showDeleteDialog(num);
+                Collections.sort(adapter.getItemList(),new EnglishComparator());
+                //adapter.notifyDataSetChanged();
                 customDialog.dismiss();
             }
         });
@@ -240,18 +250,24 @@ public class MyWordFragment extends Fragment {
             myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-"+(j+1)).setValue(editMean); //교체
 
         } else {
-            int j = adapter.getItemList().get(num - 1).mean.indexOf(wantEditMean); //삭제하려는 뜻의 뜻 배열인덱스 찾기
-            Log.d("firekmj","뜻 삭제 전"+adapter.getItemList().get(num-1).mean);
-            adapter.getItemList().get(num - 1).mean.remove(j);
-            Log.d("firekmj","뜻 삭제"+j+"번째인덱스,"+adapter.getItemList().get(num-1).mean);
-            //데이터베이스에서 삭제
-            myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-"+(j+1)).removeValue();
 
-            //데이터베이스내의 해당 단어의 의미 키값 다시 정렬. 이유: 중간 뜻의 숫자키가 사라지면 키값이 안이어짐.
-            for(int i=0;i<adapter.getItemList().get(num-1).mean.size();i++){
-                myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-"+(i+1)).setValue(adapter.getItemList().get(num-1).mean.get(i));
+            if(adapter.getItemList().get(num-1).getMean().size()==1){
+                Toast.makeText(fragmentActivity.getApplicationContext(),"뜻이 한개 밖에 없습니다.",Toast.LENGTH_SHORT).show();
             }
-            myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-"+(adapter.getItemList().get(num-1).mean.size()+1)).removeValue();
+            else {
+                int j = adapter.getItemList().get(num - 1).mean.indexOf(wantEditMean); //삭제하려는 뜻의 뜻 배열인덱스 찾기
+
+                adapter.getItemList().get(num - 1).mean.remove(j);
+
+                //데이터베이스에서 삭제
+                myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-" + (j + 1)).removeValue();
+
+                //데이터베이스내의 해당 단어의 의미 키값 다시 정렬. 이유: 중간 뜻의 숫자키가 사라지면 키값이 안이어짐.
+                for (int i = 0; i < adapter.getItemList().get(num - 1).mean.size(); i++) {
+                    myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-" + (i + 1)).setValue(adapter.getItemList().get(num - 1).mean.get(i));
+                }
+                myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-" + (adapter.getItemList().get(num - 1).mean.size() + 1)).removeValue();
+            }
         }
         rc.setAdapter(adapter);
         adapter.notifyDataSetChanged(); //어댑터 다시 시작(뷰 다시 채워넣음)

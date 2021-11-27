@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import kr.co.project.zeroid.englishdictionary.R;
@@ -81,6 +82,7 @@ public class WrongNoteFragment extends Fragment {
                             rc.setAdapter(adapter);
                         }
                     });
+                    Collections.sort(adapter.getItemList()); //틀린 순서대로 정렬
                     wrongNoteRemember=adapter.getItemList();
                 }
             };

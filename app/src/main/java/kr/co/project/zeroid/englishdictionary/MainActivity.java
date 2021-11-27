@@ -206,8 +206,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
-        //이건 어떤가?
         super.onStart();
     }
 
