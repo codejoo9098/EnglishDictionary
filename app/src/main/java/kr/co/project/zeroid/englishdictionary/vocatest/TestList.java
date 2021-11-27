@@ -7,6 +7,7 @@ import kr.co.project.zeroid.englishdictionary.etc.Result;
 import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
 
 public class TestList {
+    final static String WRONG_COUNT = "-틀린횟수";
     public static HashMap<String, HashMap<String, String>> totalData = null;
 
     public static String[] questionList;
@@ -16,6 +17,7 @@ public class TestList {
     public static Boolean[] isSolvedList;
 
     public static Boolean[] correctList;
+    public static int[] wrongCountList;
     public static int correctNumber = 0;
     public static double correctRate = 0.0;
     public static Result[] resultList;
@@ -34,6 +36,7 @@ public class TestList {
         isSolvedList = new Boolean[totalQuestionNumber];
         correctList = new Boolean[totalQuestionNumber];
         resultList = new Result[totalQuestionNumber];
+        wrongCountList = new int[totalQuestionNumber];
 
         for (String key: totalData.keySet()) {
             questionList[index] = key;
@@ -43,7 +46,6 @@ public class TestList {
     }
 
     public static void setKoreanAnswerList() {
-        int index;
         HashMap<String, String> map;
 
         for (int i = 0; i < totalQuestionNumber; i++) {
@@ -56,9 +58,11 @@ public class TestList {
             }
 
             for (String key: map.keySet()) {
-                if (!key.equals("틀린횟수")) {
+                if (!key.equals(WRONG_COUNT)) {
                     answerList[i].add(map.get(key));
-                    //index++;
+                }
+                else {
+                    wrongCountList[i] = Integer.parseInt(map.get(key));
                 }
             }
         }
@@ -68,10 +72,16 @@ public class TestList {
         String userAnswer;
 
         for (int i = 0; i < totalQuestionNumber; i++) {
-            submitList[i] = submitList[i].trim();
-
-            userAnswer = submitList[i];
             correctList[i] = false;
+
+            if (submitList[i] != null) {
+                submitList[i] = submitList[i].trim();
+                userAnswer = submitList[i];
+            }
+            else {
+                submitList[i] = "미입력";
+                continue;
+            }
 
             for (String s: answerList[i]) {
                 if (userAnswer.equals(s)) {
