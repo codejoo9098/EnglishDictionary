@@ -9,10 +9,12 @@ import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
 public class TestList {
     final static String WRONG_COUNT = "-틀린횟수";
     public static HashMap<String, HashMap<String, String>> totalData = null;
+    public static boolean testType;
 
     public static String[] questionList;
     public static int totalQuestionNumber;
     public static ArrayList<String>[] answerList;
+
     public static String[] submitList;
     public static Boolean[] isSolvedList;
 
@@ -28,6 +30,7 @@ public class TestList {
 
     public static void setKoreanQuestionList() {
         int index = 0;
+        testType = true;
         totalQuestionNumber = totalData.size();
 
         questionList = new String[totalQuestionNumber];
@@ -37,9 +40,38 @@ public class TestList {
         correctList = new Boolean[totalQuestionNumber];
         resultList = new Result[totalQuestionNumber];
         wrongCountList = new int[totalQuestionNumber];
+        correctNumber = 0;
+        correctRate = 0.0;
 
         for (String key: totalData.keySet()) {
             questionList[index] = key;
+            isSolvedList[index] = false;
+            index++;
+        }
+    }
+
+    public static void setEnglishQuestionList() {
+        int index = 0;
+        testType = false;
+        totalQuestionNumber = totalData.size();
+
+        questionList = new String[totalQuestionNumber];
+        answerList = new ArrayList[totalQuestionNumber];
+        submitList = new String[totalQuestionNumber];
+        isSolvedList = new Boolean[totalQuestionNumber];
+        correctList = new Boolean[totalQuestionNumber];
+        resultList = new Result[totalQuestionNumber];
+        wrongCountList = new int[totalQuestionNumber];
+        correctNumber = 0;
+        correctRate = 0.0;
+
+        for (String key: totalData.keySet()) {
+            HashMap<String, String> questionData = totalData.get(key);
+            int num = (int)( Math.random() * (questionData.size() - 1) ) + 1;
+            num *= -1;
+
+            questionList[index] = questionData.get(String.valueOf(num));
+            wrongCountList[index] = Integer.parseInt(questionData.get(WRONG_COUNT));
             isSolvedList[index] = false;
             index++;
         }
@@ -65,6 +97,16 @@ public class TestList {
                     wrongCountList[i] = Integer.parseInt(map.get(key));
                 }
             }
+        }
+    }
+
+    public static void setEnglishAnswerList() {
+        int index = 0;
+
+        for (String key: totalData.keySet()) {
+            answerList[index] = new ArrayList<>();
+            answerList[index].add(key);
+            index++;
         }
     }
 

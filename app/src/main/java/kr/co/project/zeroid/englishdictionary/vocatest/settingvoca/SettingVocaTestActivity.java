@@ -33,7 +33,6 @@ public class SettingVocaTestActivity extends AppCompatActivity {
             @Override
             public void onChanged(Void unused) {
                 onNavigateKoreanTestPage();
-                TestList.setKoreanQuestionList();
             }
         });
 

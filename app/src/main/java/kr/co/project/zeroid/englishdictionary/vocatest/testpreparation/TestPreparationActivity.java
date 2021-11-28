@@ -52,12 +52,14 @@ public class TestPreparationActivity extends AppCompatActivity {
         bundle.putInt(SECOND, second);
 
         if (testType == KOREAN_TEST) {
+            bundle.putBoolean(TEST_TYPE, KOREAN_TEST);
             Intent intent = new Intent(this, KoreanTestActivity.class);
             intent.putExtras(bundle);
             startActivity(intent);
         }
         else if (testType == ENGLISH_TEST){
-            Intent intent = new Intent(this, EnglishTestActivity.class);
+            bundle.putBoolean(TEST_TYPE, ENGLISH_TEST);
+            Intent intent = new Intent(this, KoreanTestActivity.class);
             intent.putExtras(bundle);
             startActivity(intent);
         }

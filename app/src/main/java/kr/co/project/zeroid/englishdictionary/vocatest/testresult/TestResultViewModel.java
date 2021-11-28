@@ -26,7 +26,6 @@ public class TestResultViewModel extends ViewModel {
     public LiveData<String> getCorrectRate() { return correctRate; }
 
     public TestResultViewModel() {
-        TestList.setKoreanAnswerList();
         TestList.setCheckList();
         TestList.setResultList();
 
@@ -50,10 +49,19 @@ public class TestResultViewModel extends ViewModel {
                 wrongCount = TestList.wrongCountList[i];
                 wrongCount++;
 
-                myDatabaseReference
-                        .child(TestList.questionList[i])
-                        .child(WRONG_COUNT)
-                        .setValue(String.valueOf(wrongCount));
+                if (TestList.testType) {
+                    myDatabaseReference
+                            .child(TestList.questionList[i])
+                            .child(WRONG_COUNT)
+                            .setValue(String.valueOf(wrongCount));
+                }
+                else {
+                    myDatabaseReference
+                            .child(TestList.answerList[i].get(0))
+                            .child(WRONG_COUNT)
+                            .setValue(String.valueOf(wrongCount));
+                }
+
             }
         }
     }

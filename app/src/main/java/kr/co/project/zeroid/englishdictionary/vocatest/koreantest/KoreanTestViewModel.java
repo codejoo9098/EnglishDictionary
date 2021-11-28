@@ -12,6 +12,8 @@ import kr.co.project.zeroid.englishdictionary.vocatest.TestList;
 
 public class KoreanTestViewModel extends ViewModel {
     final static int ONE_MINUTE = 60;
+    Boolean testType;
+    public Boolean getTestType() { return testType; }
 
     public String[] questionList = TestList.questionList;
     public String[] submitList = TestList.submitList;
@@ -34,11 +36,14 @@ public class KoreanTestViewModel extends ViewModel {
     MutableLiveData<Integer> currentWordIndex;
     public LiveData<Integer> getCurrentWordIndex() { return currentWordIndex; }
     SingleLiveEvent<Integer> updateSolvedList;
+    SingleLiveEvent<Void> eraseCurrentInput;
     String submitWord;
     int totalTime;
     int progressState = 0;
 
-    public KoreanTestViewModel(int inputMinute, int inputSecond) {
+    public KoreanTestViewModel(int inputMinute, int inputSecond, boolean testType) {
+        this.testType = testType;
+
         minute = new MutableLiveData<>();
         second = new MutableLiveData<>();
         displayWord = new MutableLiveData<>();
@@ -47,6 +52,7 @@ public class KoreanTestViewModel extends ViewModel {
         currentWordIndex = new MutableLiveData<>();
         updateSolvedList = new SingleLiveEvent<>();
         isFinished = new MutableLiveData<>();
+        eraseCurrentInput = new SingleLiveEvent<>();
 
         currentWordIndex.setValue(0);
         displayWord.setValue(questionList[0]);
@@ -92,9 +98,11 @@ public class KoreanTestViewModel extends ViewModel {
     }
 
     public void onClickCompleteWord() {
+        eraseCurrentInput.call();
         int index = currentWordIndex.getValue();
         if (!isSolvedList[index]) currentProgress.setValue(++progressState);
         submitList[index] = submitWord;
+        submitWord = "";
         updateSolvedList.setValue(index);
 
         index = ++index % totalQuestionNumber;
@@ -105,6 +113,8 @@ public class KoreanTestViewModel extends ViewModel {
     }
 
     public void onClickQuestion(int pos) {
+        eraseCurrentInput.call();
+        submitWord = "";
         currentWordIndex.setValue(pos);
         currentQuestionNumber.setValue((pos + 1) +"/" + totalQuestionNumber);
         displayWord.setValue(questionList[pos]);

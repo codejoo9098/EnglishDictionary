@@ -9,17 +9,19 @@ import kr.co.project.zeroid.englishdictionary.vocatest.koreantest.KoreanTestView
 public class MyViewModelFactory implements ViewModelProvider.Factory {
     private int minute;
     private int second;
+    private boolean testType;
 
-    public MyViewModelFactory(int minute, int second){
+    public MyViewModelFactory(int minute, int second, boolean testType){
         this.minute = minute;
         this.second = second;
+        this.testType = testType;
     }
 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(KoreanTestViewModel.class)) {
-            return (T) new KoreanTestViewModel(minute, second);
+            return (T) new KoreanTestViewModel(minute, second, testType);
         }
         throw new IllegalArgumentException("ViewModel Not Found");
     }

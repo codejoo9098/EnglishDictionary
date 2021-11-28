@@ -20,8 +20,10 @@ public class KoreanTestActivity extends AppCompatActivity {
     KoreanTestViewModel viewModel;
     final static String MINUTE = "minute";
     final static String SECOND = "second";
+    final static String TEST_TYPE = "test_type";
     ViewModelProvider.Factory factory;
     int minute, second;
+    boolean testType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +34,9 @@ public class KoreanTestActivity extends AppCompatActivity {
         Bundle bundle = intent.getExtras();
         minute = bundle.getInt(MINUTE, 1);
         second = bundle.getInt(SECOND, 0);
+        testType = bundle.getBoolean(TEST_TYPE);
 
-        factory = new MyViewModelFactory(minute, second);
+        factory = new MyViewModelFactory(minute, second, testType);
         viewModel = new ViewModelProvider(this, factory).get(KoreanTestViewModel.class);
         binding.setLifecycleOwner(this);
         binding.setViewModel(viewModel);
@@ -46,6 +49,12 @@ public class KoreanTestActivity extends AppCompatActivity {
             @Override
             public void onChanged(Integer position) {
                 adapter.updateList(position);
+            }
+        });
+
+        viewModel.eraseCurrentInput.observe(this, new Observer<Void>() {
+            @Override
+            public void onChanged(Void unused) {
                 binding.inputKorean.setText("");
             }
         });
