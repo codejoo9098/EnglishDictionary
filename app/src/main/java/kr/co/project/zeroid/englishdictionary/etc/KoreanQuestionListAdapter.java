@@ -1,24 +1,19 @@
 package kr.co.project.zeroid.englishdictionary.etc;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-
 import kr.co.project.zeroid.englishdictionary.databinding.QuestionListBinding;
-import kr.co.project.zeroid.englishdictionary.vocatest.TestList;
 import kr.co.project.zeroid.englishdictionary.vocatest.koreantest.KoreanTestViewModel;
 
-public class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.Holder>{
+public class KoreanQuestionListAdapter extends RecyclerView.Adapter<KoreanQuestionListAdapter.Holder>{
     Boolean[] problemList;
     KoreanTestViewModel viewModel;
 
-    public QuestionAdapter(Boolean[] list, KoreanTestViewModel viewModel) {
+    public KoreanQuestionListAdapter(Boolean[] list, KoreanTestViewModel viewModel) {
         problemList = list;
         this.viewModel = viewModel;
     }

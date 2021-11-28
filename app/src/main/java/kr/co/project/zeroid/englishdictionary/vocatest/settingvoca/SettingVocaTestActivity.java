@@ -7,13 +7,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-
-import javax.inject.Singleton;
 
 import kr.co.project.zeroid.englishdictionary.R;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivitySettingVocaTestBinding;
-import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
 import kr.co.project.zeroid.englishdictionary.vocatest.TestList;
 import kr.co.project.zeroid.englishdictionary.vocatest.testpreparation.TestPreparationActivity;
 
@@ -37,7 +33,6 @@ public class SettingVocaTestActivity extends AppCompatActivity {
             @Override
             public void onChanged(Void unused) {
                 onNavigateKoreanTestPage();
-                TestList.setKoreanData();
             }
         });
 

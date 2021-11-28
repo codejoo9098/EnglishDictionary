@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import kr.co.project.zeroid.englishdictionary.etc.SingleLiveEvent;
+import kr.co.project.zeroid.englishdictionary.vocatest.TestList;
 
 public class SettingVocaTestViewModel extends ViewModel {
     SingleLiveEvent<Void> navigateToKoreanTest;
@@ -17,8 +18,16 @@ public class SettingVocaTestViewModel extends ViewModel {
         navigateToEnglishTest = new SingleLiveEvent<>();
     }
 
-    public void onKoreanTestButtonClick() { navigateToKoreanTest.call(); }
-    public void onEnglishTestButtonClick() { navigateToEnglishTest.call(); }
+    public void onKoreanTestButtonClick() {
+        TestList.setKoreanQuestionList();
+        TestList.setKoreanAnswerList();
+        navigateToKoreanTest.call();
+    }
+    public void onEnglishTestButtonClick() {
+        TestList.setEnglishQuestionList();
+        TestList.setEnglishAnswerList();
+        navigateToEnglishTest.call();
+    }
     public void onMinuteChanged(CharSequence s, int start, int before, int count) {
         if (count != 0) {
             minute = Integer.parseInt(s.toString());
