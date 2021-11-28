@@ -23,4 +23,13 @@
     <string name="test_over">테스트 종료</string>
     <string name="select_word_title">단어 이동</string>
     <string name="submit_title">제출</string>
+    <string name="test_result_title">테스트 결과</string>
+    <string name="question">문제</string>
+    <string name="answer">정답</string>
+    <string name="myAnswer">나의 답</string>
+    <string name="total_question">전체 문제수</string>
+    <string name="correct_question">맞은 문제수</string>
+    <string name="correct_rate">정답률</string>
+    <string name="try_again">다시보기</string>
+    <string name="way_back_home">홈 화면으로 돌아가기</string>
 </resources>
