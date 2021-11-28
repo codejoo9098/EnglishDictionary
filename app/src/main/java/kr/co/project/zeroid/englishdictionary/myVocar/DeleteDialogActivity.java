@@ -17,6 +17,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Collections;
+
 import kr.co.project.zeroid.englishdictionary.R;
 
 public class DeleteDialogActivity extends AppCompatActivity {
@@ -49,7 +51,8 @@ public class DeleteDialogActivity extends AppCompatActivity {
                 myRef.child(MyWordFragment.adapter.getItemList().get(num - 1).englishWord).removeValue();
                 MyWordFragment.adapter.getItemList().remove(num-1);
                 MyWordFragment.adapter.notifyDataSetChanged();
-
+                WrongNoteFragment.wrongNoteRemember=MyWordFragment.adapter.getItemList();
+                Collections.sort(WrongNoteFragment.wrongNoteRemember);
                 finish();
             }
         });

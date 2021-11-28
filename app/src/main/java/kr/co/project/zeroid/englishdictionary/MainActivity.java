@@ -203,6 +203,12 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, MyVocaActivity.class));
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
     @Override
     protected void onRestart() {
         Log.d("firekmj","리스타트");

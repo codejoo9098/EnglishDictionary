@@ -1,8 +1,9 @@
 package kr.co.project.zeroid.englishdictionary.myVocar;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
-public class WordAndMean { //뷰홀더에 담길 객체
+public class WordAndMean implements Comparable<WordAndMean>{ //뷰홀더에 담길 객체
     String englishWord;
     ArrayList<String> mean;
     int mean_count;
@@ -61,4 +62,21 @@ public class WordAndMean { //뷰홀더에 담길 객체
         return mean.get(i);
     }
 
+    @Override
+    public int compareTo(WordAndMean wordAndMean) {
+        if (wordAndMean.wrongCount < wrongCount) {
+            return 1;
+        } else if (wordAndMean.wrongCount > wrongCount) {
+            return -1;
+        }
+        return 0;
+    }
 }
+class EnglishComparator implements Comparator<WordAndMean> {
+    @Override
+    public int compare(WordAndMean f1, WordAndMean f2) {
+        return f1.englishWord.compareTo(f2.englishWord);
+    }
+}
+
+
