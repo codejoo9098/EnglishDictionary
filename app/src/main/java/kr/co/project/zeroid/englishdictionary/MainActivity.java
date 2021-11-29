@@ -2,10 +2,8 @@ package kr.co.project.zeroid.englishdictionary;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -35,6 +33,9 @@ import kr.co.project.zeroid.englishdictionary.addVoca.AddVocaActivity;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivityMainBinding;
 import kr.co.project.zeroid.englishdictionary.myVocar.MyVocaActivity;
 import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
+import kr.co.project.zeroid.englishdictionary.util.MakeAlertDialog;
+import kr.co.project.zeroid.englishdictionary.util.MakeToast;
+import kr.co.project.zeroid.englishdictionary.util.NetworkStatus;
 import kr.co.project.zeroid.englishdictionary.vocatest.settingvoca.SettingVocaTestActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -103,8 +104,12 @@ public class MainActivity extends AppCompatActivity {
         googleSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent signInIntent = googleSignInClient.getSignInIntent();
-                launcher.launch(signInIntent);
+                if(NetworkStatus.getConnectivityStatus(getApplicationContext())!=3) {
+                    Intent signInIntent = googleSignInClient.getSignInIntent();
+                    launcher.launch(signInIntent);
+                } else {
+                    MakeToast.makeToast(getApplicationContext(),"인터넷 연결을 확인해 주세요.").show();
+                }
             }
         });
 
@@ -132,29 +137,49 @@ public class MainActivity extends AppCompatActivity {
                 withdrawalButton.setVisibility(View.GONE);
             }
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         if(firebaseAuth.getCurrentUser()!=null) {
             //DB에서 데이터 읽어서 Map에다 넣기
-            SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
-            googleSignInButton.setVisibility(View.GONE);
-            logoutButton.setVisibility(View.VISIBLE);
-            withdrawalButton.setVisibility(View.VISIBLE);
+            if(NetworkStatus.getConnectivityStatus(getApplicationContext())!=3) {
+                SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference,MainActivity.this);
+                googleSignInButton.setVisibility(View.GONE);
+                logoutButton.setVisibility(View.VISIBLE);
+                withdrawalButton.setVisibility(View.VISIBLE);
+            } else {
+                MakeAlertDialog.makeAlertDialog(MainActivity.this).show();
+            }
         }
     }
 
     void navigateToSearchVocaPage() {
-        Intent intent = new Intent(this, AddVocaActivity.class);
-        startActivity(intent);
+        if(SingletonVocaMap.getFlag()) {
+            Intent intent = new Intent(this, AddVocaActivity.class);
+            startActivity(intent);
+        } else {
+            MakeToast.makeToast(getApplicationContext(),"데이터를 받는 중입니다.").show();
+        }
     }
 
     void navigateToVocaTestPage() {
-        Intent intent = new Intent(this, SettingVocaTestActivity.class);
-        startActivity(intent);
+        if(SingletonVocaMap.getFlag()) {
+            Intent intent = new Intent(this, SettingVocaTestActivity.class);
+            startActivity(intent);
+        } else {
+            MakeToast.makeToast(getApplicationContext(),"데이터를 받는 중입니다.").show();
+        }
     }
 
     void navigateToMyVocaPage() {
-        Intent intent = new Intent(this, MyVocaActivity.class);
-        startActivity(intent);
+        if(SingletonVocaMap.getFlag()) {
+            Intent intent = new Intent(this, MyVocaActivity.class);
+            startActivity(intent);
+        } else {
+            MakeToast.makeToast(getApplicationContext(),"데이터를 받는 중입니다.").show();
+        }
     }
 
     ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -171,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                             logoutButton.setVisibility(View.VISIBLE);
                             withdrawalButton.setVisibility(View.VISIBLE);
                         } catch (ApiException e) {
-                            Toast.makeText(MainActivity.this,"구글회원가입 또는 로그인 오류입니다.",Toast.LENGTH_SHORT).show();
+                            MakeToast.makeToast(getApplicationContext(),"구글회원가입 또는 로그인 오류입니다.").show();
                         }
                     }
                 }
@@ -188,35 +213,14 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             //DB에서 데이터 읽어서 Map에다 넣기
-                            SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
-                            Toast.makeText(MainActivity.this, "로그인 성공", Toast.LENGTH_SHORT).show();
+                            SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference,MainActivity.this);
+                            MakeToast.makeToast(getApplicationContext(),"로그인 성공").show();
                         } else {
-                            Toast.makeText(MainActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
+                            MakeToast.makeToast(getApplicationContext(),"로그인 실패").show();
                         }
 
                     }
                 });
-    }
-    public void start_myVocaActivity(View view){
-        //여기서 최신화 안하면 시작하자마자
-        //SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
-        startActivity(new Intent(this, MyVocaActivity.class));
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onRestart() {
-        Log.d("firekmj","리스타트");
-        SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
-        //여기서 해야하는 이유.
-        // 나만의 단어장에서 바뀐 내용이 통신으로 데이터베이스가 최신화됐는데,
-        // 메인액티비티로 돌아가서 다른 액티비티로 들어가면 최신화가 안된 SingletonVocaMap이 있다.
-        super.onRestart();
     }
 }
 

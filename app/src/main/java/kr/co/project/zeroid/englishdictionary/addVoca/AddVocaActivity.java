@@ -10,7 +10,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -33,6 +32,8 @@ import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import kr.co.project.zeroid.englishdictionary.R;
 import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
+import kr.co.project.zeroid.englishdictionary.util.MakeToast;
+import kr.co.project.zeroid.englishdictionary.util.NetworkStatus;
 
 public class AddVocaActivity extends AppCompatActivity {
 
@@ -69,42 +70,51 @@ public class AddVocaActivity extends AppCompatActivity {
         searchVocaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //onPreExecute
-                addVocaProgressBar.setVisibility(View.VISIBLE);
-                //doInBackground
-                Observable.fromCallable(()->{
-                    searchText= searchVocaEditText.getText().toString();
-                    searchText=searchText.substring(0,1).toUpperCase()+searchText.substring(1,searchText.length()).toLowerCase();
-                    if(onlyEnglish.matcher(searchText).matches()) {
-                        String result=searchEnglish(searchText);
-                        resultArray=searchEnglishTrimResult(result);
-                        listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-                    } else if(onlyKorean.matcher(searchText).matches()) {
-                        String result=searchKorean(searchText);
-                        resultArray=searchKoreanTrimResult(result);
-                        listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-                    } else {
-                        searchText=null;
-                        return false;
+                if(NetworkStatus.getConnectivityStatus(getApplicationContext())!=3) {
+                    if(searchVocaEditText.getText().length()==0) {
+                        MakeToast.makeToast(getApplicationContext(),"검색할 단어를 입력하세요.").show();
                     }
-                    return true;
-                })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe((result)->{
-                            //onPostExecute
-                            searchVocaEditText.setText(null);
-                            if(result==true) {
-                                addVocaProgressBar.setVisibility(View.GONE);
-                                showResult(listView, resultArray);
+                    else {
+                        //onPreExecute
+                        addVocaProgressBar.setVisibility(View.VISIBLE);
+                        //doInBackground
+                        Observable.fromCallable(() -> {
+                            searchText = searchVocaEditText.getText().toString();
+                            searchText = searchText.substring(0, 1).toUpperCase() + searchText.substring(1, searchText.length()).toLowerCase();
+                            if (onlyEnglish.matcher(searchText).matches()) {
+                                String result = searchEnglish(searchText);
+                                resultArray = searchEnglishTrimResult(result);
+                                listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+                            } else if (onlyKorean.matcher(searchText).matches()) {
+                                String result = searchKorean(searchText);
+                                resultArray = searchKoreanTrimResult(result);
+                                listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
                             } else {
-                                Toast.makeText(getApplicationContext(),"영어만 입력하거나 한글만 입력하세요.",Toast.LENGTH_SHORT).show();
-                                ArrayList<AddVocaListData> listViewData = new ArrayList<>();
-                                ListAdapter oAdapter = new AddVocaCustomView(listViewData);
-                                listView.setAdapter(oAdapter);
-                                addVocaProgressBar.setVisibility(View.GONE);
+                                searchText = null;
+                                return false;
                             }
-                        });
+                            return true;
+                        })
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe((result) -> {
+                                    //onPostExecute
+                                    searchVocaEditText.setText(null);
+                                    if (result == true) {
+                                        addVocaProgressBar.setVisibility(View.GONE);
+                                        showResult(listView, resultArray);
+                                    } else {
+                                        MakeToast.makeToast(getApplicationContext(),"영어만 입력하거나 한글만 입력하세요.").show();
+                                        ArrayList<AddVocaListData> listViewData = new ArrayList<>();
+                                        ListAdapter oAdapter = new AddVocaCustomView(listViewData);
+                                        listView.setAdapter(oAdapter);
+                                        addVocaProgressBar.setVisibility(View.GONE);
+                                    }
+                                });
+                    }
+                } else {
+                    MakeToast.makeToast(getApplicationContext(),"인터넷 연결을 확인해 주세요.").show();
+                }
             }
         });
 
@@ -112,33 +122,35 @@ public class AddVocaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                    int childCount = listView.getChildCount();
-                    if(searchText==null || childCount==0) {
-                        Toast.makeText(getApplicationContext(),"추가할 단어가 없습니다.",Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    ArrayList<String> inputVocaList = new ArrayList<>();
-                    for (int i = 0; i < childCount; i++) {
-                        if (listView.isItemChecked(i)) {
-                            inputVocaList.add((String) listView.getAdapter().getItem(i));
+                    if(NetworkStatus.getConnectivityStatus(getApplicationContext())!=3) {
+                        int childCount = listView.getChildCount();
+                        if (searchText == null || childCount == 0) {
+                            MakeToast.makeToast(getApplicationContext(), "추가할 단어가 없습니다.").show();
+                            return;
                         }
-                    }
-                    if(inputVocaList.isEmpty()) {
-                        Toast.makeText(getApplicationContext(),"추가할 단어가 선택되지 않았습니다.",Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    if(onlyEnglish.matcher(searchText).matches()) {
-                        addInputVocaListToFirebaseRealtimeDatabaseOnlyEnglish(inputVocaList);
-                    } else if(onlyKorean.matcher(searchText).matches()) {
-                        addInputVocaListToFirebaseRealtimeDatabaseOnlyKorean(inputVocaList);
+                        ArrayList<String> inputVocaList = new ArrayList<>();
+                        for (int i = 0; i < childCount; i++) {
+                            if (listView.isItemChecked(i)) {
+                                inputVocaList.add((String) listView.getAdapter().getItem(i));
+                            }
+                        }
+                        if (inputVocaList.isEmpty()) {
+                            MakeToast.makeToast(getApplicationContext(), "추가할 단어가 선택되지 않았습니다.").show();
+                            return;
+                        }
+                        if (onlyEnglish.matcher(searchText).matches()) {
+                            addInputVocaListToFirebaseRealtimeDatabaseOnlyEnglish(inputVocaList);
+                        } else if (onlyKorean.matcher(searchText).matches()) {
+                            addInputVocaListToFirebaseRealtimeDatabaseOnlyKorean(inputVocaList);
+                        } else {
+                            MakeToast.makeToast(getApplicationContext(), "예상치 못한 오류가 발생했습니다. 다시 시도해 주세요.").show();
+                        }
+                        MakeToast.makeToast(getApplicationContext(), "단어가 추가됬습니다.").show();
                     } else {
-                        Toast.makeText(getApplicationContext(),"예상치 못한 오류가 발생했습니다. 다시 시도해 주세요.",Toast.LENGTH_SHORT);
+                        MakeToast.makeToast(getApplicationContext(), "인터넷 연결을 확인해 주세요.").show();
                     }
-                    //단어 추가하고 다시 받아옴
-                    SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
-                    Toast.makeText(getApplicationContext(),"단어가 추가됬습니다.",Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getApplicationContext(),"로그인이 필요한 서비스입니다.",Toast.LENGTH_SHORT).show();
+                    MakeToast.makeToast(getApplicationContext(),"로그인이 필요한 서비스입니다.").show();
                 }
             }
         });
@@ -219,7 +231,7 @@ public class AddVocaActivity extends AppCompatActivity {
             ListAdapter oAdapter = new AddVocaCustomView(listViewData);
             listView.setAdapter(oAdapter);
             searchText=null;
-            Toast.makeText(getApplicationContext(),"검색 결과가 없습니다.",Toast.LENGTH_SHORT).show();
+            MakeToast.makeToast(getApplicationContext(),"검색 결과가 없습니다.").show();
         }
     }
 
