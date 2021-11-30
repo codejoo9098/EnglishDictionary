@@ -38,6 +38,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyWordViewHolder> 
         this.itemList = itemList;
     }
 
+    public WordAndMean searchItemEnglish(String searchEg){
+        for(WordAndMean i:itemList){
+            Log.d("firekmj",""+i.getEnglishWord());
+            if(i.getEnglishWord().equals(searchEg)){
+                Log.d("firekmj","같다!"+i.getEnglishWord());
+                return i;
+            }
+        }
+        return null;
+    }
+
     @Override
     public int getItemCount() {
         return itemList.size();

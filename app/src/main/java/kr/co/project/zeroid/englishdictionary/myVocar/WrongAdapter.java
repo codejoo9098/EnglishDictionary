@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import kr.co.project.zeroid.englishdictionary.R;
 
 public class WrongAdapter extends RecyclerView.Adapter<WrongAdapter.WrongViewHolder> {
-    static ArrayList<WordAndMean> itemList;
+    private ArrayList<WordAndMean> itemList;
     private WrongViewHolder holder;
 
     public WrongAdapter(){
@@ -34,6 +34,14 @@ public class WrongAdapter extends RecyclerView.Adapter<WrongAdapter.WrongViewHol
     public void onBindViewHolder(@NonNull WrongViewHolder holder, int position) {
         WordAndMean wam=itemList.get(position);
         holder.setItem(wam);
+    }
+
+    public void setItemList(ArrayList<WordAndMean> itemList) {
+        this.itemList = itemList;
+    }
+
+    public ArrayList<WordAndMean> getItemList() {
+        return itemList;
     }
 
     @Override

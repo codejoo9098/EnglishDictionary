@@ -63,6 +63,7 @@ public class SearchFragment extends Fragment {
                 MyAdapter adapter = new MyAdapter();
                 int searchAmount=db.size();
                 String query_s=query.trim();
+                query_s=query_s.substring(0,1).toUpperCase()+query_s.substring(1,query_s.length()).toLowerCase();
                 if (R.id.english_word==radioGroup.getCheckedRadioButtonId()) {//영단어검색하는 경우
                     int count=0;
                     for(int i=0;i<searchAmount;i++){
