@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import kr.co.project.zeroid.englishdictionary.R;
+import kr.co.project.zeroid.englishdictionary.network.NetworkStatus;
 import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
 
 
@@ -47,7 +48,6 @@ public class MyWordFragment extends Fragment {
     }
 
     public static MyWordFragment newInstance() {
-        Log.d("firekmj","newInstance");
         MyWordFragment fragment = new MyWordFragment(); //자동으로 기본생성자 호출
         Bundle args = new Bundle();
         fragment.setArguments(args);
@@ -66,7 +66,6 @@ public class MyWordFragment extends Fragment {
     static int isFirst=0;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d("firekmj","프래그먼트 크리에이트");
         super.onCreate(savedInstanceState);
     }
 
@@ -79,7 +78,6 @@ public class MyWordFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_my_word, container, false);
         rc = view.findViewById(R.id.myWordRecyclerView);
         fragmentActivity = getActivity();
-        Log.d("firekmj","onCreateView");
 
         if (isFirst==0) {
             pullDataThread=new Thread("Pull Data"){
@@ -143,7 +141,6 @@ public class MyWordFragment extends Fragment {
     public void onPause() {
         stay_remember=adapter.getItemList();
         pullDataThread.interrupt();
-        Log.d("firekmj","프래그먼트 정지");
         super.onPause();
     }
 
@@ -158,82 +155,87 @@ public class MyWordFragment extends Fragment {
     static Button deleteBt; //삭제버튼
 
     static public void Didalog(View view, TextView no, TextView eglish, TextView koreanM) {
+        if (NetworkStatus.getConnectivityStatus(fragmentActivity.getApplicationContext()) != 3) {
+            View customDialogView = inflater1.inflate(R.layout.my_word_dialog_layout, null);
+            EditText edMean = customDialogView.findViewById(R.id.edit_mean);
+            TextView eg = customDialogView.findViewById(R.id.english_in_dialog);
+            TextView add = customDialogView.findViewById(R.id.add_mean);
+            Spinner spinner = customDialogView.findViewById(R.id.mean_spinner);
+            int num = Integer.parseInt(no.getText().toString()); //다이얼로그를 호출한 항목이 몇번째인지
+            ArrayList<String> meanSpinner = adapter.getItemList().get(num - 1).getMean();
 
-        View customDialogView = inflater1.inflate(R.layout.my_word_dialog_layout, null);
-        EditText edMean = customDialogView.findViewById(R.id.edit_mean);
-        TextView eg = customDialogView.findViewById(R.id.english_in_dialog);
-        TextView add = customDialogView.findViewById(R.id.add_mean);
-        Spinner spinner = customDialogView.findViewById(R.id.mean_spinner);
-        int num = Integer.parseInt(no.getText().toString()); //다이얼로그를 호출한 항목이 몇번째인지
-        ArrayList<String> meanSpinner = adapter.getItemList().get(num - 1).getMean();
-
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(customDialogView.getContext(), android.R.layout.simple_spinner_item, meanSpinner);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                wantEditMean = adapter.getItemList().get(num - 1).mean.get(i);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                wantEditMean = adapter.getItemList().get(num - 1).mean.get(0);
-            }
-        });
-
-        DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (dialog == customDialog && which == DialogInterface.BUTTON_POSITIVE) {
-                    //Toast.makeText(koreanM.getContext(), "확인", Toast.LENGTH_SHORT).show();
-                    editMean = edMean.getText().toString().trim();//수정하려고 입력한 단어
-                    tvEnglish = eg.getText().toString(); //선택한 영단어(다이얼로그의 주인)
-                    addMean = add.getText().toString(); //추가하려고 입력한 뜻
-
-                    //int num=Integer.parseInt(no.getText().toString());
-
-                    //수정하거나 삭제하는 단어가 있는지.
-                    if ("삭제!".equals(editMean)) { //삭제 입력하면 해당 뜻 삭제
-                        editKoreanMean(1, num); //해당 뜻 삭제
-
-                    } else if (!("".equals(editMean))) { //삭제가 아니고 빈것도 아니라면 해당 뜻 수정.
-                        //Toast.makeText(koreanM.getContext(), "확인"+editMean, Toast.LENGTH_SHORT).show();
-
-                        editKoreanMean(0, num); //삭제하는게 아니라 수정임.
-                    }
-                    //
-                    if (!("".equals(addMean))) {
-                        adapter.getItemList().get(num - 1).mean.add(addMean);
-                        adapter.notifyDataSetChanged();
-                        int new_add_num=adapter.getItemList().get(num - 1).mean.size();
-                        myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-"+new_add_num).setValue(addMean);
-                        //db수정.
-                    }
+            ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(customDialogView.getContext(), android.R.layout.simple_spinner_item, meanSpinner);
+            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(spinnerAdapter);
+            spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    wantEditMean = adapter.getItemList().get(num - 1).mean.get(i);
                 }
 
-            }
-        };
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+                    wantEditMean = adapter.getItemList().get(num - 1).mean.get(0);
+                }
+            });
 
-        deleteBt = customDialogView.findViewById(R.id.delete_in_my_word); //삭제 버튼 클릭시
-        deleteBt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDeleteDialog(num);
-                Collections.sort(adapter.getItemList(),new EnglishComparator());
-                //adapter.notifyDataSetChanged();
-                customDialog.dismiss();
-            }
-        });
+            DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (dialog == customDialog && which == DialogInterface.BUTTON_POSITIVE) {
+                        //Toast.makeText(koreanM.getContext(), "확인", Toast.LENGTH_SHORT).show();
+                        editMean = edMean.getText().toString().trim();//수정하려고 입력한 단어
+                        tvEnglish = eg.getText().toString(); //선택한 영단어(다이얼로그의 주인)
+                        addMean = add.getText().toString(); //추가하려고 입력한 뜻
 
-        eg.setText(eglish.getText().toString());//다이얼로그에 무슨 단어의 다이얼로그인지 표시
+                        //int num=Integer.parseInt(no.getText().toString());
 
-        builder.setView(customDialogView);
-        builder.setPositiveButton("확인", dialogListener);
-        builder.setNegativeButton("취소", null);
-        customDialog = builder.create();
-        customDialog.show();
+                        //수정하거나 삭제하는 단어가 있는지.
+                        if ("삭제!".equals(editMean)) { //삭제 입력하면 해당 뜻 삭제
+                            editKoreanMean(1, num); //해당 뜻 삭제
+
+                        } else if (!("".equals(editMean))) { //삭제가 아니고 빈것도 아니라면 해당 뜻 수정.
+                            //Toast.makeText(koreanM.getContext(), "확인"+editMean, Toast.LENGTH_SHORT).show();
+
+                            editKoreanMean(0, num); //삭제하는게 아니라 수정임.
+                        }
+                        //
+                        if (!("".equals(addMean))) {
+                            adapter.getItemList().get(num - 1).mean.add(addMean);
+                            adapter.notifyDataSetChanged();
+                            int new_add_num = adapter.getItemList().get(num - 1).mean.size();
+                            myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-" + new_add_num).setValue(addMean);
+                            //db수정.
+                        }
+                    }
+
+                }
+            };
+
+            deleteBt = customDialogView.findViewById(R.id.delete_in_my_word); //삭제 버튼 클릭시
+            deleteBt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showDeleteDialog(num);
+                    Collections.sort(adapter.getItemList(), new EnglishComparator());
+                    //adapter.notifyDataSetChanged();
+                    customDialog.dismiss();
+                }
+            });
+
+            eg.setText(eglish.getText().toString());//다이얼로그에 무슨 단어의 다이얼로그인지 표시
+
+            builder.setView(customDialogView);
+            builder.setPositiveButton("확인", dialogListener);
+            builder.setNegativeButton("취소", null);
+            customDialog = builder.create();
+            customDialog.show();
+        }
+        else{
+            Toast.makeText(fragmentActivity.getApplicationContext(),"네트워크 연결을 확인해주세요.",Toast.LENGTH_SHORT).show();
+        }
     }
+
 
     static public void showDeleteDialog(int num) {
         fragmentActivity.startActivity(new Intent(fragmentActivity, DeleteDialogActivity.class).putExtra("num", num));
@@ -276,7 +278,12 @@ public class MyWordFragment extends Fragment {
     }
 
     static public void word_Add(){
-        fragmentActivity.startActivity(new Intent(fragmentActivity, AddWordDialogActivity.class));
+        if(NetworkStatus.getConnectivityStatus(fragmentActivity.getApplicationContext())!=3) {
+            fragmentActivity.startActivity(new Intent(fragmentActivity, AddWordDialogActivity.class));
+        }
+        else{
+            Toast.makeText(fragmentActivity.getApplicationContext(),"네트워크 연결을 확인해주세요.",Toast.LENGTH_SHORT).show();
+        }
     }
 
 }
