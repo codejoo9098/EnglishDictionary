@@ -15,18 +15,22 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <activity
             android:name=".vocatest.testresult.TestResultActivity"
+            android:noHistory="true"
             android:exported="true" />
         <activity
             android:name=".vocatest.englishtest.EnglishTestActivity"
             android:exported="true" />
         <activity
             android:name=".vocatest.koreantest.KoreanTestActivity"
+            android:noHistory="true"
             android:exported="true" />
         <activity
             android:name=".vocatest.testpreparation.TestPreparationActivity"
+            android:noHistory="true"
             android:exported="true" />
         <activity
             android:name=".vocatest.settingvoca.SettingVocaTestActivity"
+            android:noHistory="true"
             android:exported="true" />
         <activity
             android:name=".myVocar.DeleteDialogActivity"

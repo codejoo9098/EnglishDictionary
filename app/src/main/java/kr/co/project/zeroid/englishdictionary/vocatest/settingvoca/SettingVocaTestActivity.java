@@ -1,5 +1,6 @@
 package kr.co.project.zeroid.englishdictionary.vocatest.settingvoca;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
@@ -7,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import kr.co.project.zeroid.englishdictionary.R;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivitySettingVocaTestBinding;
@@ -42,6 +44,13 @@ public class SettingVocaTestActivity extends AppCompatActivity {
                 onNavigateEnglishTestPage();
             }
         });
+
+        viewModel.closeTestEvent.observe(this, new Observer<Void>() {
+            @Override
+            public void onChanged(Void unused) {
+                unableToStartTestEvent();
+            }
+        });
     }
 
     private void onNavigateKoreanTestPage() {
@@ -68,5 +77,10 @@ public class SettingVocaTestActivity extends AppCompatActivity {
         intent.putExtras(bundle);
 
         startActivity(intent);
+    }
+
+    private void unableToStartTestEvent() {
+        Toast.makeText(getApplicationContext(), "저장되어 있는 단어가 없습니다!", Toast.LENGTH_SHORT).show();
+        finish();
     }
 }

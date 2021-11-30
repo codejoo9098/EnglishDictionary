@@ -33,7 +33,10 @@ public class KoreanTestActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         minute = bundle.getInt(MINUTE, 1);
-        second = bundle.getInt(SECOND, 0);
+        second = bundle.getInt(SECOND, 30);
+        if (second > 59) {
+            second = 59;
+        }
         testType = bundle.getBoolean(TEST_TYPE);
 
         factory = new MyViewModelFactory(minute, second, testType);

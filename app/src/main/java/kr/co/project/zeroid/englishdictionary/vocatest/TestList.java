@@ -1,8 +1,11 @@
 package kr.co.project.zeroid.englishdictionary.vocatest;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import io.reactivex.rxjava3.core.Single;
 import kr.co.project.zeroid.englishdictionary.etc.Result;
 import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
 
@@ -24,8 +27,9 @@ public class TestList {
     public static double correctRate = 0.0;
     public static Result[] resultList;
 
-    static {
+    public static boolean checkEmptyData() {
         totalData = SingletonVocaMap.getInstance();
+        return totalData.size() == 0;
     }
 
     public static void setKoreanQuestionList() {
@@ -134,7 +138,7 @@ public class TestList {
             }
         }
 
-        correctRate = (double) correctNumber / totalQuestionNumber;
+        correctRate = (double) correctNumber * 100 / totalQuestionNumber;
     }
 
     public static void setResultList() {

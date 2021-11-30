@@ -5,12 +5,14 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import kr.co.project.zeroid.englishdictionary.R;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivityTestResultBinding;
 import kr.co.project.zeroid.englishdictionary.etc.Result;
 import kr.co.project.zeroid.englishdictionary.etc.ResultListAdapter;
+import kr.co.project.zeroid.englishdictionary.vocatest.settingvoca.SettingVocaTestActivity;
 
 public class TestResultActivity extends AppCompatActivity {
     ActivityTestResultBinding binding;
@@ -34,5 +36,24 @@ public class TestResultActivity extends AppCompatActivity {
                 adapter.setList(results);
             }
         });
+
+        viewModel.navigateToTestEvent.observe(this, new Observer<Void>() {
+            @Override
+            public void onChanged(Void unused) {
+                navigateToTestPage();
+            }
+        });
+
+        viewModel.navigateToHomeEvent.observe(this, new Observer<Void>() {
+            @Override
+            public void onChanged(Void unused) {
+                finish();
+            }
+        });
+    }
+
+    private void navigateToTestPage() {
+        Intent intent = new Intent(this, SettingVocaTestActivity.class);
+        startActivity(intent);
     }
 }
