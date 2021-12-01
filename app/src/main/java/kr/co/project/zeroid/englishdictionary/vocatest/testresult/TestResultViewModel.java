@@ -10,6 +10,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import kr.co.project.zeroid.englishdictionary.etc.Result;
 import kr.co.project.zeroid.englishdictionary.etc.SingleLiveEvent;
+import kr.co.project.zeroid.englishdictionary.network.NetworkStatus;
 import kr.co.project.zeroid.englishdictionary.vocatest.TestList;
 
 public class TestResultViewModel extends ViewModel {
@@ -25,6 +26,7 @@ public class TestResultViewModel extends ViewModel {
     public LiveData<String> getCorrectQuestion() { return correctQuestion; }
     MutableLiveData<String> correctRate;
     public LiveData<String> getCorrectRate() { return correctRate; }
+    SingleLiveEvent<Void> disconnectedNetworkEvent;
     SingleLiveEvent<Void> navigateToHomeEvent;
     SingleLiveEvent<Void> navigateToTestEvent;
 
@@ -32,15 +34,16 @@ public class TestResultViewModel extends ViewModel {
         TestList.setCheckList();
         TestList.setResultList();
 
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        myDatabaseReference = databaseReference.child("users").child(FirebaseAuth.getInstance().getUid());
-
         resultList = new MutableLiveData<>();
         totalQuestion = new MutableLiveData<>();
         correctQuestion = new MutableLiveData<>();
         correctRate = new MutableLiveData<>();
         navigateToHomeEvent = new SingleLiveEvent<>();
         navigateToTestEvent = new SingleLiveEvent<>();
+        disconnectedNetworkEvent = new SingleLiveEvent<>();
+
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        myDatabaseReference = databaseReference.child("users").child(FirebaseAuth.getInstance().getUid());
 
         resultList.setValue(TestList.resultList);
         totalQuestion.setValue(String.valueOf(TestList.totalQuestionNumber));

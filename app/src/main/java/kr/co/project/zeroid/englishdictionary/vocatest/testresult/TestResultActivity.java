@@ -7,14 +7,17 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import kr.co.project.zeroid.englishdictionary.R;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivityTestResultBinding;
 import kr.co.project.zeroid.englishdictionary.etc.Result;
 import kr.co.project.zeroid.englishdictionary.etc.ResultListAdapter;
+import kr.co.project.zeroid.englishdictionary.network.NetworkStatus;
 import kr.co.project.zeroid.englishdictionary.vocatest.settingvoca.SettingVocaTestActivity;
 
 public class TestResultActivity extends AppCompatActivity {
+    final static String WARNING_MESSAGE = "네트워크에 연결되어 있지 않아서 틀린횟수를 업데이트 할 수 없습니다.";
     ActivityTestResultBinding binding;
     TestResultViewModel viewModel;
     ResultListAdapter adapter;
@@ -29,6 +32,10 @@ public class TestResultActivity extends AppCompatActivity {
 
         adapter = new ResultListAdapter();
         binding.resultListContainer.setAdapter(adapter);
+
+        if (NetworkStatus.getConnectivityStatus(this) == 3) {
+            Toast.makeText(this, WARNING_MESSAGE, Toast.LENGTH_SHORT).show();
+        }
 
         viewModel.resultList.observe(this, new Observer<Result[]>() {
             @Override
