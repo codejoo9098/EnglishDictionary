@@ -9,6 +9,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import kr.co.project.zeroid.englishdictionary.etc.Result;
+import kr.co.project.zeroid.englishdictionary.etc.SingleLiveEvent;
+import kr.co.project.zeroid.englishdictionary.network.NetworkStatus;
 import kr.co.project.zeroid.englishdictionary.vocatest.TestList;
 
 public class TestResultViewModel extends ViewModel {
@@ -24,23 +26,29 @@ public class TestResultViewModel extends ViewModel {
     public LiveData<String> getCorrectQuestion() { return correctQuestion; }
     MutableLiveData<String> correctRate;
     public LiveData<String> getCorrectRate() { return correctRate; }
+    SingleLiveEvent<Void> disconnectedNetworkEvent;
+    SingleLiveEvent<Void> navigateToHomeEvent;
+    SingleLiveEvent<Void> navigateToTestEvent;
 
     public TestResultViewModel() {
         TestList.setCheckList();
         TestList.setResultList();
 
-        databaseReference = FirebaseDatabase.getInstance().getReference();
-        myDatabaseReference = databaseReference.child("users").child(FirebaseAuth.getInstance().getUid());
-
         resultList = new MutableLiveData<>();
         totalQuestion = new MutableLiveData<>();
         correctQuestion = new MutableLiveData<>();
         correctRate = new MutableLiveData<>();
+        navigateToHomeEvent = new SingleLiveEvent<>();
+        navigateToTestEvent = new SingleLiveEvent<>();
+        disconnectedNetworkEvent = new SingleLiveEvent<>();
+
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        myDatabaseReference = databaseReference.child("users").child(FirebaseAuth.getInstance().getUid());
 
         resultList.setValue(TestList.resultList);
         totalQuestion.setValue(String.valueOf(TestList.totalQuestionNumber));
         correctQuestion.setValue(String.valueOf(TestList.correctNumber));
-        correctRate.setValue(String.format("%.2f", TestList.correctRate));
+        correctRate.setValue(String.format("%.1f", TestList.correctRate) + "%");
 
         for (int i = 0; i < TestList.totalQuestionNumber; i++) {
             int wrongCount;
@@ -64,5 +72,13 @@ public class TestResultViewModel extends ViewModel {
 
             }
         }
+    }
+
+    public void onHomeButtonClick() {
+        navigateToHomeEvent.call();
+    }
+
+    public void onTestButtonClick() {
+        navigateToTestEvent.call();
     }
 }

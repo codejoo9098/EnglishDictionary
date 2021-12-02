@@ -80,7 +80,7 @@ public class KoreanTestViewModel extends ViewModel {
                             second.postValue(String.valueOf(countSecond));
                         }
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        break;
                     }
                 }
 
@@ -92,17 +92,18 @@ public class KoreanTestViewModel extends ViewModel {
     }
 
     public void onAnswerChanged(CharSequence s, int start, int before, int count) {
-        if (count != 0) {
+        if (!s.toString().equals("")) {
             submitWord = s.toString();
+        }
+        else {
+            submitWord = "";
         }
     }
 
     public void onClickCompleteWord() {
-        eraseCurrentInput.call();
         int index = currentWordIndex.getValue();
         if (!isSolvedList[index]) currentProgress.setValue(++progressState);
         submitList[index] = submitWord;
-        submitWord = "";
         updateSolvedList.setValue(index);
 
         index = ++index % totalQuestionNumber;
@@ -110,17 +111,23 @@ public class KoreanTestViewModel extends ViewModel {
         currentWordIndex.setValue(index);
         currentQuestionNumber.setValue((index % totalQuestionNumber + 1) + "/" + totalQuestionNumber);
         displayWord.setValue(questionList[index % totalQuestionNumber]);
+        eraseCurrentInput.call();
     }
 
     public void onClickQuestion(int pos) {
-        eraseCurrentInput.call();
-        submitWord = "";
         currentWordIndex.setValue(pos);
         currentQuestionNumber.setValue((pos + 1) +"/" + totalQuestionNumber);
         displayWord.setValue(questionList[pos]);
+        eraseCurrentInput.call();
     }
 
     public void onSubmitButtonClick() {
-        isFinished.setValue(true);
+        thread.interrupt();
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        thread.interrupt();
     }
 }
