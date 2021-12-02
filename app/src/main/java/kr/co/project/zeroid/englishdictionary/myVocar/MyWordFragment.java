@@ -17,6 +17,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -25,15 +32,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import kr.co.project.zeroid.englishdictionary.R;
-import kr.co.project.zeroid.englishdictionary.network.NetworkStatus;
 import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
+import kr.co.project.zeroid.englishdictionary.util.NetworkStatus;
 
 
 public class MyWordFragment extends Fragment {
@@ -79,19 +80,7 @@ public class MyWordFragment extends Fragment {
             pullDataThread=new Thread("Pull Data"){
                 @Override
                 public void run() {
-                    Thread singleVocaRead=new Thread("Single Read"){
-                        @Override
-                        public void run() {
-                            SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference,getContext());
-                        }
-                    };
-                    singleVocaRead.start();
-                    try {
-                        Thread.sleep(1000);
-                        singleVocaRead.interrupt();
-                    } catch (InterruptedException e) {
-                        ;
-                    }
+
                     Log.d("firekmj","작업스레드 안입니다.");
                     isFirst++;
                     HashMap<String, HashMap<String, String>> singletonVocaMap=SingletonVocaMap.getInstance(); //최근에 통신으로 받아온걸 받음.
@@ -135,11 +124,23 @@ public class MyWordFragment extends Fragment {
 
     @Override
     public void onPause() {
+        Log.d("firekmj","단어장 프래그먼트 정지됨.");
         stay_remember=adapter.getItemList();
         pullDataThread.interrupt();
         super.onPause();
     }
 
+    @Override
+    public void onStop() {
+        Log.d("firekmj","단어장 프래그먼트 스탑됨.");
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d("firekmj","단어장 프래그먼트 파괴됨.");
+        super.onDestroy();
+    }
 
     static AlertDialog customDialog; //다이얼로그 안에서 이벤트 처리를 위한 다이얼로그 객체
     static LayoutInflater inflater1; //이게 프래그먼트 인자인 inflater랑 같아서 오류난거였음ㅠㅠ 바꾸니까 되네

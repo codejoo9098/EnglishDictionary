@@ -1,23 +1,19 @@
 package kr.co.project.zeroid.englishdictionary.myVocar;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import kr.co.project.zeroid.englishdictionary.R;
-import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
 
 public class MyVocaActivity extends AppCompatActivity {
     static BottomNavigationView bottomNavigationView;
@@ -84,7 +80,20 @@ public class MyVocaActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onPause() {
+        Log.d("firekmj","나의 보카 액티비티 정지됨.");
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d("firekmj","나의 보카 액티비티 스탑됨.");
+        super.onStop();
+    }
+
+    @Override
     protected void onDestroy() {
+        Log.d("firekmj","나의 보카 액티비티 파괴됨.");
         MyWordFragment.stay_remember=null;
         WrongNoteFragment.wrongNoteRemember=null;
         super.onDestroy();

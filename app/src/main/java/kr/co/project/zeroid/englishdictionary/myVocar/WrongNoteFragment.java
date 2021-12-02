@@ -1,15 +1,7 @@
 package kr.co.project.zeroid.englishdictionary.myVocar;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
@@ -19,13 +11,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 
 import kr.co.project.zeroid.englishdictionary.R;
-import kr.co.project.zeroid.englishdictionary.network.NetworkStatus;
-import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
+import kr.co.project.zeroid.englishdictionary.util.NetworkStatus;
 
 public class WrongNoteFragment extends Fragment {
 
