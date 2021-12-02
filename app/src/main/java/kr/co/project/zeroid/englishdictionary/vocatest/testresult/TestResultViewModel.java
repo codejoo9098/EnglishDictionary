@@ -10,7 +10,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import kr.co.project.zeroid.englishdictionary.etc.Result;
 import kr.co.project.zeroid.englishdictionary.etc.SingleLiveEvent;
-import kr.co.project.zeroid.englishdictionary.network.NetworkStatus;
 import kr.co.project.zeroid.englishdictionary.vocatest.TestList;
 
 public class TestResultViewModel extends ViewModel {

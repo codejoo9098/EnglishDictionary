@@ -13,7 +13,7 @@ import kr.co.project.zeroid.englishdictionary.R;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivityTestResultBinding;
 import kr.co.project.zeroid.englishdictionary.etc.Result;
 import kr.co.project.zeroid.englishdictionary.etc.ResultListAdapter;
-import kr.co.project.zeroid.englishdictionary.network.NetworkStatus;
+import kr.co.project.zeroid.englishdictionary.util.NetworkStatus;
 import kr.co.project.zeroid.englishdictionary.vocatest.settingvoca.SettingVocaTestActivity;
 
 public class TestResultActivity extends AppCompatActivity {
