@@ -3,6 +3,7 @@ package kr.co.project.zeroid.englishdictionary;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -45,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
     Button logoutButton;
     Button withdrawalButton;
 
+    Button myVocaButton;
+    Button vocaTestButton;
+
     private GoogleSignInClient googleSignInClient;
 
     private FirebaseAuth firebaseAuth;
@@ -65,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         binding.setLifecycleOwner(this);
         binding.setViewModel(viewModel);
+
+        myVocaButton=findViewById(R.id.myVocaButton);
+        vocaTestButton=findViewById(R.id.vocaTestButton);
 
         viewModel.navigateToSearchVoca.observe(this, new Observer<Void>() {
             @Override
@@ -122,6 +129,8 @@ public class MainActivity extends AppCompatActivity {
                 googleSignInButton.setVisibility(View.VISIBLE);
                 logoutButton.setVisibility(View.GONE);
                 withdrawalButton.setVisibility(View.GONE);
+                myVocaButton.setVisibility(View.GONE);
+                vocaTestButton.setVisibility(View.GONE);
             }
         });
 
@@ -135,6 +144,8 @@ public class MainActivity extends AppCompatActivity {
                 googleSignInButton.setVisibility(View.VISIBLE);
                 logoutButton.setVisibility(View.GONE);
                 withdrawalButton.setVisibility(View.GONE);
+                myVocaButton.setVisibility(View.GONE);
+                vocaTestButton.setVisibility(View.GONE);
             }
         });
     }
@@ -149,6 +160,8 @@ public class MainActivity extends AppCompatActivity {
                 googleSignInButton.setVisibility(View.GONE);
                 logoutButton.setVisibility(View.VISIBLE);
                 withdrawalButton.setVisibility(View.VISIBLE);
+                myVocaButton.setVisibility(View.VISIBLE);
+                vocaTestButton.setVisibility(View.VISIBLE);
             } else {
                 MakeAlertDialog.makeAlertDialog(MainActivity.this).show();
             }
@@ -156,30 +169,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void navigateToSearchVocaPage() {
-        if(SingletonVocaMap.getFlag()) {
-            Intent intent = new Intent(this, AddVocaActivity.class);
-            startActivity(intent);
-        } else {
-            MakeToast.makeToast(getApplicationContext(),"데이터를 받는 중입니다.").show();
-        }
+        Intent intent = new Intent(this, AddVocaActivity.class);
+        startActivity(intent);
     }
 
     void navigateToVocaTestPage() {
-        if(SingletonVocaMap.getFlag()) {
-            Intent intent = new Intent(this, SettingVocaTestActivity.class);
-            startActivity(intent);
-        } else {
-            MakeToast.makeToast(getApplicationContext(),"데이터를 받는 중입니다.").show();
-        }
+        Intent intent = new Intent(this, SettingVocaTestActivity.class);
+        startActivity(intent);
     }
 
     void navigateToMyVocaPage() {
-        if(SingletonVocaMap.getFlag()) {
-            Intent intent = new Intent(this, MyVocaActivity.class);
-            startActivity(intent);
-        } else {
-            MakeToast.makeToast(getApplicationContext(),"데이터를 받는 중입니다.").show();
-        }
+        Intent intent = new Intent(this, MyVocaActivity.class);
+        startActivity(intent);
     }
 
     ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -190,12 +191,17 @@ public class MainActivity extends AppCompatActivity {
                         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
                         try {
                             // 구글 로그인 성공
+                            MainActivity.this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                             GoogleSignInAccount account = task.getResult(ApiException.class);
                             firebaseAuthWithGoogle(account);
                             googleSignInButton.setVisibility(View.GONE);
                             logoutButton.setVisibility(View.VISIBLE);
                             withdrawalButton.setVisibility(View.VISIBLE);
+                            myVocaButton.setVisibility(View.VISIBLE);
+                            vocaTestButton.setVisibility(View.VISIBLE);
                         } catch (ApiException e) {
+                            MainActivity.this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                             MakeToast.makeToast(getApplicationContext(),"구글회원가입 또는 로그인 오류입니다.").show();
                         }
                     }
@@ -205,7 +211,6 @@ public class MainActivity extends AppCompatActivity {
     // 사용자가 정상적으로 로그인한 후에 GoogleSignInAccount 개체에서 ID 토큰을 가져와서
     // Firebase 사용자 인증 정보로 교환하고 Firebase 사용자 인증 정보를 사용해 Firebase에 인증합니다.
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -213,9 +218,11 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             //DB에서 데이터 읽어서 Map에다 넣기
+                            MainActivity.this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                             SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference,MainActivity.this);
                             MakeToast.makeToast(getApplicationContext(),"로그인 성공").show();
                         } else {
+                            MainActivity.this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                             MakeToast.makeToast(getApplicationContext(),"로그인 실패").show();
                         }
 
