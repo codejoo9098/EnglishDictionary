@@ -2,7 +2,6 @@ package kr.co.project.zeroid.englishdictionary.addVoca;
 
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.Button;
@@ -10,7 +9,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -22,17 +20,15 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
 import java.util.regex.Pattern;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import kr.co.project.zeroid.englishdictionary.R;
-import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
+import kr.co.project.zeroid.englishdictionary.util.MakeToast;
+import kr.co.project.zeroid.englishdictionary.util.NetworkStatus;
 
 public class AddVocaActivity extends AppCompatActivity {
 
@@ -52,8 +48,6 @@ public class AddVocaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_voca);
 
-        getDataExample();
-
         ListView listView=findViewById(R.id.addVocaListView);
         TextView searchVocaEditText=findViewById(R.id.searchVocaEditText);
         Button searchVocaButton=findViewById(R.id.searchVocaButton);
@@ -63,48 +57,58 @@ public class AddVocaActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        Pattern onlyEnglish = Pattern.compile("^[a-zA-Z]+$");
-        Pattern onlyKorean=Pattern.compile("^[가-힣]+$");
+        Pattern onlyEnglish = Pattern.compile("^[a-zA-Z ]+$");
+        Pattern onlyKorean=Pattern.compile("^[가-힣 ]+$");
 
         searchVocaButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //onPreExecute
-                addVocaProgressBar.setVisibility(View.VISIBLE);
-                //doInBackground
-                Observable.fromCallable(()->{
-                    searchText= searchVocaEditText.getText().toString();
-                    searchText=searchText.substring(0,1).toUpperCase()+searchText.substring(1,searchText.length()).toLowerCase();
-                    if(onlyEnglish.matcher(searchText).matches()) {
-                        String result=searchEnglish(searchText);
-                        resultArray=searchEnglishTrimResult(result);
-                        listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-                    } else if(onlyKorean.matcher(searchText).matches()) {
-                        String result=searchKorean(searchText);
-                        resultArray=searchKoreanTrimResult(result);
-                        listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-                    } else {
-                        searchText=null;
-                        return false;
+                if(NetworkStatus.getConnectivityStatus(getApplicationContext())!=3) {
+                    searchVocaEditText.setText(searchVocaEditText.getText().toString().trim());
+                    if(searchVocaEditText.getText().length()==0) {
+                        MakeToast.makeToast(getApplicationContext(),"검색할 단어를 입력하세요.").show();
                     }
-                    return true;
-                })
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe((result)->{
-                            //onPostExecute
-                            searchVocaEditText.setText(null);
-                            if(result==true) {
-                                addVocaProgressBar.setVisibility(View.GONE);
-                                showResult(listView, resultArray);
+                    else {
+                        //onPreExecute
+                        addVocaProgressBar.setVisibility(View.VISIBLE);
+                        //doInBackground
+                        Observable.fromCallable(() -> {
+                            searchText = searchVocaEditText.getText().toString();
+                            searchText = searchText.substring(0, 1).toUpperCase() + searchText.substring(1, searchText.length()).toLowerCase();
+                            if (onlyEnglish.matcher(searchText).matches()) {
+                                String result = searchEnglish(searchText);
+                                resultArray = searchEnglishTrimResult(result);
+                                listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
+                            } else if (onlyKorean.matcher(searchText).matches()) {
+                                String result = searchKorean(searchText);
+                                resultArray = searchKoreanTrimResult(result);
+                                listView.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
                             } else {
-                                Toast.makeText(getApplicationContext(),"영어만 입력하거나 한글만 입력하세요.",Toast.LENGTH_SHORT).show();
-                                ArrayList<AddVocaListData> listViewData = new ArrayList<>();
-                                ListAdapter oAdapter = new AddVocaCustomView(listViewData);
-                                listView.setAdapter(oAdapter);
-                                addVocaProgressBar.setVisibility(View.GONE);
+                                searchText = null;
+                                return false;
                             }
-                        });
+                            return true;
+                        })
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe((result) -> {
+                                    //onPostExecute
+                                    searchVocaEditText.setText(null);
+                                    if (result == true) {
+                                        addVocaProgressBar.setVisibility(View.GONE);
+                                        showResult(listView, resultArray);
+                                    } else {
+                                        MakeToast.makeToast(getApplicationContext(),"영어+공백조합이거나 한글+공백조합만 입력하세요.").show();
+                                        ArrayList<AddVocaListData> listViewData = new ArrayList<>();
+                                        ListAdapter oAdapter = new AddVocaCustomView(listViewData);
+                                        listView.setAdapter(oAdapter);
+                                        addVocaProgressBar.setVisibility(View.GONE);
+                                    }
+                                });
+                    }
+                } else {
+                    MakeToast.makeToast(getApplicationContext(),"인터넷 연결을 확인해 주세요.").show();
+                }
             }
         });
 
@@ -112,33 +116,35 @@ public class AddVocaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                    int childCount = listView.getChildCount();
-                    if(searchText==null || childCount==0) {
-                        Toast.makeText(getApplicationContext(),"추가할 단어가 없습니다.",Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    ArrayList<String> inputVocaList = new ArrayList<>();
-                    for (int i = 0; i < childCount; i++) {
-                        if (listView.isItemChecked(i)) {
-                            inputVocaList.add((String) listView.getAdapter().getItem(i));
+                    if(NetworkStatus.getConnectivityStatus(getApplicationContext())!=3) {
+                        int childCount = listView.getChildCount();
+                        if (searchText == null || childCount == 0) {
+                            MakeToast.makeToast(getApplicationContext(), "추가할 단어가 없습니다.").show();
+                            return;
                         }
-                    }
-                    if(inputVocaList.isEmpty()) {
-                        Toast.makeText(getApplicationContext(),"추가할 단어가 선택되지 않았습니다.",Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    if(onlyEnglish.matcher(searchText).matches()) {
-                        addInputVocaListToFirebaseRealtimeDatabaseOnlyEnglish(inputVocaList);
-                    } else if(onlyKorean.matcher(searchText).matches()) {
-                        addInputVocaListToFirebaseRealtimeDatabaseOnlyKorean(inputVocaList);
+                        ArrayList<String> inputVocaList = new ArrayList<>();
+                        for (int i = 0; i < childCount; i++) {
+                            if (listView.isItemChecked(i)) {
+                                inputVocaList.add((String) listView.getAdapter().getItem(i));
+                            }
+                        }
+                        if (inputVocaList.isEmpty()) {
+                            MakeToast.makeToast(getApplicationContext(), "추가할 단어가 선택되지 않았습니다.").show();
+                            return;
+                        }
+                        if (onlyEnglish.matcher(searchText).matches()) {
+                            addInputVocaListToFirebaseRealtimeDatabaseOnlyEnglish(inputVocaList);
+                        } else if (onlyKorean.matcher(searchText).matches()) {
+                            addInputVocaListToFirebaseRealtimeDatabaseOnlyKorean(inputVocaList);
+                        } else {
+                            MakeToast.makeToast(getApplicationContext(), "예상치 못한 오류가 발생했습니다. 다시 시도해 주세요.").show();
+                        }
+                        MakeToast.makeToast(getApplicationContext(), "단어가 추가됬습니다.").show();
                     } else {
-                        Toast.makeText(getApplicationContext(),"예상치 못한 오류가 발생했습니다. 다시 시도해 주세요.",Toast.LENGTH_SHORT);
+                        MakeToast.makeToast(getApplicationContext(), "인터넷 연결을 확인해 주세요.").show();
                     }
-                    //단어 추가하고 다시 받아옴
-                    SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
-                    Toast.makeText(getApplicationContext(),"단어가 추가됬습니다.",Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getApplicationContext(),"로그인이 필요한 서비스입니다.",Toast.LENGTH_SHORT).show();
+                    MakeToast.makeToast(getApplicationContext(),"로그인이 필요한 서비스입니다.").show();
                 }
             }
         });
@@ -219,37 +225,7 @@ public class AddVocaActivity extends AppCompatActivity {
             ListAdapter oAdapter = new AddVocaCustomView(listViewData);
             listView.setAdapter(oAdapter);
             searchText=null;
-            Toast.makeText(getApplicationContext(),"검색 결과가 없습니다.",Toast.LENGTH_SHORT).show();
+            MakeToast.makeToast(getApplicationContext(),"검색 결과가 없습니다.").show();
         }
-    }
-
-    //데이터 가져오기 예제
-    //로그인을 하면 메인에서 데이터를 가져왔으니까 그것을 사용해 보는예제
-    //현재 DB에 있는 로그인된 계정의 데이터를 전부 가져온다.
-    private void getDataExample() {
-        HashMap<String, HashMap<String,String>> singletonVocaMap=SingletonVocaMap.getInstance();
-        Log.d("firebase",""+singletonVocaMap.keySet());
-        //이렇게 하면 apple의 -1 값인 애플이 리턴됨.
-        //keyset은 키값들을 가져올수있다.
-
-        AlertDialog.Builder dialog=new AlertDialog.Builder(AddVocaActivity.this);
-        String dialogString="";
-        if(!singletonVocaMap.isEmpty()) {
-            //검색한 단어들의 set이다.
-            Set<String> searchVocaSet=singletonVocaMap.keySet();
-            for(String searchVoca:searchVocaSet) {
-                //추가한 단어들의 set이다.
-                dialogString=dialogString+"검색한 단어 : "+searchVoca+"\n";
-                Set<String> addVocaSet=singletonVocaMap.get(searchVoca).keySet();
-                for(String addVoca:addVocaSet) {
-                    String tmp=singletonVocaMap.get(searchVoca).get(addVoca);
-                    dialogString=dialogString+addVoca+"번째 : " + tmp + "\n";
-                }
-            }
-            dialog.setMessage(dialogString);
-        } else {
-            dialog.setMessage("단어가 없습니다.");
-        }
-        dialog.show();
     }
 }

@@ -1,4 +1,4 @@
-package kr.co.project.zeroid.englishdictionary.network;
+package kr.co.project.zeroid.englishdictionary.util;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

@@ -2,10 +2,9 @@ package kr.co.project.zeroid.englishdictionary;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -35,6 +34,9 @@ import kr.co.project.zeroid.englishdictionary.addVoca.AddVocaActivity;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivityMainBinding;
 import kr.co.project.zeroid.englishdictionary.myVocar.MyVocaActivity;
 import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
+import kr.co.project.zeroid.englishdictionary.util.MakeAlertDialog;
+import kr.co.project.zeroid.englishdictionary.util.MakeToast;
+import kr.co.project.zeroid.englishdictionary.util.NetworkStatus;
 import kr.co.project.zeroid.englishdictionary.vocatest.settingvoca.SettingVocaTestActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
 
     Button logoutButton;
     Button withdrawalButton;
+
+    Button myVocaButton;
+    Button vocaTestButton;
 
     private GoogleSignInClient googleSignInClient;
 
@@ -64,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         binding.setLifecycleOwner(this);
         binding.setViewModel(viewModel);
+
+        myVocaButton=findViewById(R.id.myVocaButton);
+        vocaTestButton=findViewById(R.id.vocaTestButton);
 
         viewModel.navigateToSearchVoca.observe(this, new Observer<Void>() {
             @Override
@@ -103,8 +111,12 @@ public class MainActivity extends AppCompatActivity {
         googleSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent signInIntent = googleSignInClient.getSignInIntent();
-                launcher.launch(signInIntent);
+                if(NetworkStatus.getConnectivityStatus(getApplicationContext())!=3) {
+                    Intent signInIntent = googleSignInClient.getSignInIntent();
+                    launcher.launch(signInIntent);
+                } else {
+                    MakeToast.makeToast(getApplicationContext(),"인터넷 연결을 확인해 주세요.").show();
+                }
             }
         });
 
@@ -117,6 +129,8 @@ public class MainActivity extends AppCompatActivity {
                 googleSignInButton.setVisibility(View.VISIBLE);
                 logoutButton.setVisibility(View.GONE);
                 withdrawalButton.setVisibility(View.GONE);
+                myVocaButton.setVisibility(View.GONE);
+                vocaTestButton.setVisibility(View.GONE);
             }
         });
 
@@ -130,15 +144,27 @@ public class MainActivity extends AppCompatActivity {
                 googleSignInButton.setVisibility(View.VISIBLE);
                 logoutButton.setVisibility(View.GONE);
                 withdrawalButton.setVisibility(View.GONE);
+                myVocaButton.setVisibility(View.GONE);
+                vocaTestButton.setVisibility(View.GONE);
             }
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         if(firebaseAuth.getCurrentUser()!=null) {
             //DB에서 데이터 읽어서 Map에다 넣기
-            SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
-            googleSignInButton.setVisibility(View.GONE);
-            logoutButton.setVisibility(View.VISIBLE);
-            withdrawalButton.setVisibility(View.VISIBLE);
+            if(NetworkStatus.getConnectivityStatus(getApplicationContext())!=3) {
+                SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference,MainActivity.this);
+                googleSignInButton.setVisibility(View.GONE);
+                logoutButton.setVisibility(View.VISIBLE);
+                withdrawalButton.setVisibility(View.VISIBLE);
+                myVocaButton.setVisibility(View.VISIBLE);
+                vocaTestButton.setVisibility(View.VISIBLE);
+            } else {
+                MakeAlertDialog.makeAlertDialog(MainActivity.this).show();
+            }
         }
     }
 
@@ -165,13 +191,18 @@ public class MainActivity extends AppCompatActivity {
                         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
                         try {
                             // 구글 로그인 성공
+                            MainActivity.this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                             GoogleSignInAccount account = task.getResult(ApiException.class);
                             firebaseAuthWithGoogle(account);
                             googleSignInButton.setVisibility(View.GONE);
                             logoutButton.setVisibility(View.VISIBLE);
                             withdrawalButton.setVisibility(View.VISIBLE);
+                            myVocaButton.setVisibility(View.VISIBLE);
+                            vocaTestButton.setVisibility(View.VISIBLE);
                         } catch (ApiException e) {
-                            Toast.makeText(MainActivity.this,"구글회원가입 또는 로그인 오류입니다.",Toast.LENGTH_SHORT).show();
+                            MainActivity.this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                            MakeToast.makeToast(getApplicationContext(),"구글회원가입 또는 로그인 오류입니다.").show();
                         }
                     }
                 }
@@ -180,7 +211,6 @@ public class MainActivity extends AppCompatActivity {
     // 사용자가 정상적으로 로그인한 후에 GoogleSignInAccount 개체에서 ID 토큰을 가져와서
     // Firebase 사용자 인증 정보로 교환하고 Firebase 사용자 인증 정보를 사용해 Firebase에 인증합니다.
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -188,35 +218,16 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             //DB에서 데이터 읽어서 Map에다 넣기
-                            SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
-                            Toast.makeText(MainActivity.this, "로그인 성공", Toast.LENGTH_SHORT).show();
+                            MainActivity.this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                            SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference,MainActivity.this);
+                            MakeToast.makeToast(getApplicationContext(),"로그인 성공").show();
                         } else {
-                            Toast.makeText(MainActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
+                            MainActivity.this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                            MakeToast.makeToast(getApplicationContext(),"로그인 실패").show();
                         }
 
                     }
                 });
-    }
-    public void start_myVocaActivity(View view){
-        //여기서 최신화 안하면 시작하자마자
-        //SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
-        startActivity(new Intent(this, MyVocaActivity.class));
-    }
-
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    @Override
-    protected void onRestart() {
-        Log.d("firekmj","리스타트");
-        SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference);
-        //여기서 해야하는 이유.
-        // 나만의 단어장에서 바뀐 내용이 통신으로 데이터베이스가 최신화됐는데,
-        // 메인액티비티로 돌아가서 다른 액티비티로 들어가면 최신화가 안된 SingletonVocaMap이 있다.
-        super.onRestart();
     }
 }
 
