@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 import kr.co.project.zeroid.englishdictionary.R;
+import kr.co.project.zeroid.englishdictionary.network.NetworkStatus;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyWordViewHolder> {
     private ArrayList<WordAndMean> itemList;

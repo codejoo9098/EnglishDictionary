@@ -9,15 +9,13 @@ public class WordAndMean implements Comparable<WordAndMean>{ //뷰홀더에 담�
     int mean_count;
     int wrongCount;
 
-
     public WordAndMean(String e,ArrayList<String> m,int wc){
         this.englishWord=e;
         this.mean=m;
         this.mean_count=m.size();
         this.wrongCount=wc;
     }
-
-
+    
     public String getEnglishWord() { return englishWord; }
     public ArrayList<String> getMean() {
         return mean;
