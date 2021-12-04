@@ -46,9 +46,6 @@ public class SearchFragment extends Fragment {
 
         ArrayList<WordAndMean> db = MyWordFragment.stay_remember;
 
-
-
-
         searchView = view.findViewById(R.id.search_view);
         categoryBar=view.findViewById(R.id.categoryBar);
         rc=view.findViewById(R.id.searchRc);
@@ -71,11 +68,11 @@ public class SearchFragment extends Fragment {
                     }
                     if(count==0){
                         categoryBar.setVisibility(View.GONE);
+                        rc.setAdapter(adapter);
                         Toast.makeText(getContext(), "검색과 일치하는 단어가 없습니다.", Toast.LENGTH_SHORT).show();
                     }
                     else{
                         categoryBar.setVisibility(View.VISIBLE);
-
                         rc.setLayoutManager(new LinearLayoutManager(getActivity()));
                         rc.setAdapter(adapter);
                     }
@@ -89,6 +86,7 @@ public class SearchFragment extends Fragment {
                     }
                     if(count==0){
                         categoryBar.setVisibility(View.GONE);
+                        rc.setAdapter(adapter);
                         Toast.makeText(getContext(), "검색과 일치하는 단어가 없습니다.", Toast.LENGTH_SHORT).show();
                     }
                     else{
