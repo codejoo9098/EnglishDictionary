@@ -10,6 +10,8 @@
         android:id="@+id/radio_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="5dp"
         android:orientation="horizontal"
         >
         <RadioButton
@@ -26,12 +28,14 @@
     </RadioGroup>
 
     <androidx.appcompat.widget.SearchView
-           android:id="@+id/search_view"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           app:iconifiedByDefault="false"
-           app:queryHint="@string/search_hint"
-           />
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
+        app:iconifiedByDefault="false"
+        app:queryHint="@string/search_hint" />
+
     <LinearLayout
         android:id="@+id/categoryBar"
         android:layout_width="match_parent"
