@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import kr.co.project.zeroid.englishdictionary.R;
+import kr.co.project.zeroid.englishdictionary.util.MakeToast;
 import kr.co.project.zeroid.englishdictionary.util.NetworkStatus;
 
 public class WrongNoteFragment extends Fragment {
@@ -59,6 +60,7 @@ public class WrongNoteFragment extends Fragment {
         rc=view.findViewById(R.id.myWrongRecyclerView);
         fragmentActivity=getActivity();
         if(isWrongNoteFirst==0) {
+            Log.d("firekmj","오답노트 처음아님");
             wrongPullDataThread = new Thread("wrong Data") {
                 @Override
                 public void run() {
@@ -88,6 +90,7 @@ public class WrongNoteFragment extends Fragment {
             wrongPullDataThread.start();
         }
         else{
+            Log.d("firekmj","오답노트 다시");
             adapter=new WrongAdapter();
             adapter.setItemList(wrongNoteRemember);
             rc.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -116,11 +119,16 @@ public class WrongNoteFragment extends Fragment {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     if (i == DialogInterface.BUTTON_POSITIVE) {
-                        //DB먼저 처리(틀린횟수를 0으로 해줌.)하고 리스트에서 삭제
-                        MyWordFragment.myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-틀린횟수").setValue("0"); //교체
-                        adapter.getItemList().remove(num - 1);
-                        adapter.notifyDataSetChanged();
-                        Toast.makeText(no.getContext(), english + " 단어가 삭제됐습니다.", Toast.LENGTH_SHORT).show();
+                        if (NetworkStatus.getConnectivityStatus(fragmentActivity.getApplicationContext()) != 3) {
+                            //DB먼저 처리(틀린횟수를 0으로 해줌.)하고 리스트에서 삭제
+                            MyWordFragment.myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-틀린횟수").setValue("0"); //교체
+                            adapter.getItemList().remove(num - 1);
+                            adapter.notifyDataSetChanged();
+                            Toast.makeText(no.getContext(), english + " 단어가 삭제됐습니다.", Toast.LENGTH_SHORT).show();
+                        }
+                        else{
+                            MakeToast.makeToast(fragmentActivity.getApplicationContext(), "네트워크 연결을 확인해주세요.").show();
+                        }
                     }
                 }
             };
@@ -136,7 +144,7 @@ public class WrongNoteFragment extends Fragment {
             messageText.setGravity(Gravity.CENTER);
         }
         else{
-            Toast.makeText(fragmentActivity.getApplicationContext(), "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show();
+            MakeToast.makeToast(fragmentActivity.getApplicationContext(), "네트워크 연결을 확인해주세요.").show();
         }
     }
 
