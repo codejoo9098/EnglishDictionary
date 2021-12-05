@@ -34,6 +34,7 @@ import java.util.HashMap;
 
 import kr.co.project.zeroid.englishdictionary.R;
 import kr.co.project.zeroid.englishdictionary.singleton.SingletonVocaMap;
+import kr.co.project.zeroid.englishdictionary.util.MakeToast;
 import kr.co.project.zeroid.englishdictionary.util.NetworkStatus;
 
 
@@ -180,29 +181,33 @@ public class MyWordFragment extends Fragment {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (dialog == customDialog && which == DialogInterface.BUTTON_POSITIVE) {
-                        //Toast.makeText(koreanM.getContext(), "확인", Toast.LENGTH_SHORT).show();
-                        editMean = edMean.getText().toString().trim();//수정하려고 입력한 단어
-                        tvEnglish = eg.getText().toString(); //선택한 영단어(다이얼로그의 주인)
-                        addMean = add.getText().toString(); //추가하려고 입력한 뜻
+                        if (NetworkStatus.getConnectivityStatus(fragmentActivity.getApplicationContext()) != 3) {
+                            editMean = edMean.getText().toString().trim();//수정하려고 입력한 단어
+                            tvEnglish = eg.getText().toString(); //선택한 영단어(다이얼로그의 주인)
+                            addMean = add.getText().toString(); //추가하려고 입력한 뜻
 
-                        //int num=Integer.parseInt(no.getText().toString());
+                            //int num=Integer.parseInt(no.getText().toString());
 
-                        //수정하거나 삭제하는 단어가 있는지.
-                        if ("삭제!".equals(editMean)) { //삭제 입력하면 해당 뜻 삭제
-                            editKoreanMean(1, num); //해당 뜻 삭제
+                            //수정하거나 삭제하는 단어가 있는지.
+                            if ("삭제!".equals(editMean)) { //삭제 입력하면 해당 뜻 삭제
+                                editKoreanMean(1, num); //해당 뜻 삭제
 
-                        } else if (!("".equals(editMean))) { //삭제가 아니고 빈것도 아니라면 해당 뜻 수정.
-                            //Toast.makeText(koreanM.getContext(), "확인"+editMean, Toast.LENGTH_SHORT).show();
+                            } else if (!("".equals(editMean))) { //삭제가 아니고 빈것도 아니라면 해당 뜻 수정.
+                                //Toast.makeText(koreanM.getContext(), "확인"+editMean, Toast.LENGTH_SHORT).show();
 
-                            editKoreanMean(0, num); //삭제하는게 아니라 수정임.
+                                editKoreanMean(0, num); //삭제하는게 아니라 수정임.
+                            }
+                            //
+                            if (!("".equals(addMean))) {
+                                adapter.getItemList().get(num - 1).mean.add(addMean);
+                                adapter.notifyDataSetChanged();
+                                int new_add_num = adapter.getItemList().get(num - 1).mean.size();
+                                myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-" + new_add_num).setValue(addMean);
+                                //db수정.
+                            }
                         }
-                        //
-                        if (!("".equals(addMean))) {
-                            adapter.getItemList().get(num - 1).mean.add(addMean);
-                            adapter.notifyDataSetChanged();
-                            int new_add_num = adapter.getItemList().get(num - 1).mean.size();
-                            myRef.child(adapter.getItemList().get(num - 1).englishWord).child("-" + new_add_num).setValue(addMean);
-                            //db수정.
+                        else{
+                            MakeToast.makeToast(fragmentActivity.getApplicationContext(),"네트워크 연결을 확인해주세요.").show();
                         }
                     }
 
@@ -214,8 +219,6 @@ public class MyWordFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
                     showDeleteDialog(num);
-                    Collections.sort(adapter.getItemList(), new EnglishComparator());
-                    //adapter.notifyDataSetChanged();
                     customDialog.dismiss();
                 }
             });
@@ -229,7 +232,7 @@ public class MyWordFragment extends Fragment {
             customDialog.show();
         }
         else{
-            Toast.makeText(fragmentActivity.getApplicationContext(),"네트워크 연결을 확인해주세요.",Toast.LENGTH_SHORT).show();
+            MakeToast.makeToast(fragmentActivity.getApplicationContext(),"네트워크 연결을 확인해주세요.").show();
         }
     }
 
@@ -279,7 +282,7 @@ public class MyWordFragment extends Fragment {
             fragmentActivity.startActivity(new Intent(fragmentActivity, AddWordDialogActivity.class));
         }
         else{
-            Toast.makeText(fragmentActivity.getApplicationContext(),"네트워크 연결을 확인해주세요.",Toast.LENGTH_SHORT).show();
+            MakeToast.makeToast(fragmentActivity.getApplicationContext(),"네트워크 연결을 확인해주세요.").show();
         }
     }
 
