@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import kr.co.project.zeroid.englishdictionary.R;
 import kr.co.project.zeroid.englishdictionary.databinding.ActivityTestResultBinding;
+import kr.co.project.zeroid.englishdictionary.etc.MyViewModelFactory;
 import kr.co.project.zeroid.englishdictionary.etc.Result;
 import kr.co.project.zeroid.englishdictionary.etc.ResultListAdapter;
 import kr.co.project.zeroid.englishdictionary.util.NetworkStatus;
@@ -21,13 +22,17 @@ public class TestResultActivity extends AppCompatActivity {
     ActivityTestResultBinding binding;
     TestResultViewModel viewModel;
     ResultListAdapter adapter;
+    ViewModelProvider.Factory factory;
+    int networkStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_test_result);
         binding.setLifecycleOwner(this);
-        viewModel = new ViewModelProvider(this).get(TestResultViewModel.class);
+        networkStatus = NetworkStatus.getConnectivityStatus(this);
+        factory = new MyViewModelFactory(networkStatus);
+        viewModel = new ViewModelProvider(this, factory).get(TestResultViewModel.class);
         binding.setViewModel(viewModel);
 
         adapter = new ResultListAdapter();

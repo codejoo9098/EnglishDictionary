@@ -120,7 +120,7 @@ public class TestList {
         for (int i = 0; i < totalQuestionNumber; i++) {
             correctList[i] = false;
 
-            if (submitList[i] != null) {
+            if (submitList[i] != null && !submitList[i].equals("")) {
                 submitList[i] = submitList[i].trim();
                 userAnswer = submitList[i];
             }

@@ -29,7 +29,7 @@ public class TestResultViewModel extends ViewModel {
     SingleLiveEvent<Void> navigateToHomeEvent;
     SingleLiveEvent<Void> navigateToTestEvent;
 
-    public TestResultViewModel() {
+    public TestResultViewModel(int networkStatus) {
         TestList.setCheckList();
         TestList.setResultList();
 
@@ -49,6 +49,12 @@ public class TestResultViewModel extends ViewModel {
         correctQuestion.setValue(String.valueOf(TestList.correctNumber));
         correctRate.setValue(String.format("%.1f", TestList.correctRate) + "%");
 
+        if (networkStatus != 3) {
+            updateWrongCount();
+        }
+    }
+
+    private void updateWrongCount() {
         for (int i = 0; i < TestList.totalQuestionNumber; i++) {
             int wrongCount;
 

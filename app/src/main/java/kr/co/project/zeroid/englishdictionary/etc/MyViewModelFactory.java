@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import kr.co.project.zeroid.englishdictionary.vocatest.koreantest.KoreanTestViewModel;
+import kr.co.project.zeroid.englishdictionary.vocatest.testresult.TestResultViewModel;
 
 public class MyViewModelFactory implements ViewModelProvider.Factory {
     private int minute;
@@ -17,11 +18,18 @@ public class MyViewModelFactory implements ViewModelProvider.Factory {
         this.testType = testType;
     }
 
+    public MyViewModelFactory(int minute) {
+        this.minute = minute;
+    }
+
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(KoreanTestViewModel.class)) {
             return (T) new KoreanTestViewModel(minute, second, testType);
+        }
+        else if (modelClass.isAssignableFrom(TestResultViewModel.class)) {
+            return (T) new TestResultViewModel(minute);
         }
         throw new IllegalArgumentException("ViewModel Not Found");
     }

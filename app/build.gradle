@@ -1,8 +1,5 @@
 plugins {
     id 'com.android.application'
-    id 'dagger.hilt.android.plugin'
-    id 'kotlin-android'
-    id 'kotlin-kapt'
     id 'com.google.gms.google-services'
 }
 
@@ -46,14 +43,9 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.recyclerview:recyclerview-selection:1.1.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation "com.google.dagger:hilt-android:2.28-alpha"
-    implementation 'androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha01'
     implementation 'com.google.firebase:firebase-database:19.2.1'
     implementation 'io.reactivex.rxjava3:rxjava:3.1.2'
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
-    implementation "com.github.yourssu:YDS-Android:0.9.0"
-    annotationProcessor 'androidx.hilt:hilt-compiler:1.0.0-alpha01'
-    kapt "com.google.dagger:hilt-android-compiler:2.28-alpha"
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
