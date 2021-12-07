@@ -43,6 +43,8 @@ public class AddVocaActivity extends AppCompatActivity {
     private String searchText;
 
     private String[] resultArray;
+
+    private boolean unexpectedErrorFlag=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +91,11 @@ public class AddVocaActivity extends AppCompatActivity {
                             }
                             return true;
                         })
+                                .onErrorReturn(throwable -> {
+                                    unexpectedErrorFlag=true;
+                                    searchText=null;
+                                    return false;
+                                })
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe((result) -> {
@@ -98,7 +105,12 @@ public class AddVocaActivity extends AppCompatActivity {
                                         addVocaProgressBar.setVisibility(View.GONE);
                                         showResult(listView, resultArray);
                                     } else {
-                                        MakeToast.makeToast(getApplicationContext(),"영어+공백조합이거나 한글+공백조합만 입력하세요.").show();
+                                        if(unexpectedErrorFlag==true) {
+                                            unexpectedErrorFlag=false;
+                                            MakeToast.makeToast(getApplicationContext(),"예상하지 못한 오류가 발생했습니다. 다시 시도해주세요.").show();
+                                        } else {
+                                            MakeToast.makeToast(getApplicationContext(), "영어+공백조합이거나 한글+공백조합만 입력하세요.").show();
+                                        }
                                         ArrayList<AddVocaListData> listViewData = new ArrayList<>();
                                         ListAdapter oAdapter = new AddVocaCustomView(listViewData);
                                         listView.setAdapter(oAdapter);
