@@ -81,7 +81,6 @@ public class MyWordFragment extends Fragment {
             pullDataThread=new Thread("Pull Data"){
                 @Override
                 public void run() {
-
                     Log.d("firekmj","작업스레드 안입니다.");
                     isFirst++;
                     HashMap<String, HashMap<String, String>> singletonVocaMap=SingletonVocaMap.getInstance(); //최근에 통신으로 받아온걸 받음.

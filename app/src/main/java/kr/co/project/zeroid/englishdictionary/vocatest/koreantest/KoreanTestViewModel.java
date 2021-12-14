@@ -42,6 +42,7 @@ public class KoreanTestViewModel extends ViewModel {
     int progressState = 0;
 
     public KoreanTestViewModel(int inputMinute, int inputSecond, boolean testType) {
+        Log.d("제로이드", "뷰모델 생성");
         this.testType = testType;
 
         minute = new MutableLiveData<>();

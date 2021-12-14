@@ -2,6 +2,7 @@ package kr.co.project.zeroid.englishdictionary;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -156,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
         if(firebaseAuth.getCurrentUser()!=null) {
             //DB에서 데이터 읽어서 Map에다 넣기
             if(NetworkStatus.getConnectivityStatus(getApplicationContext())!=3) {
+                Log.d("제로이드", "데이터 갱신");
                 SingletonVocaMap.readToFirebaseRealtimeDatabase(databaseReference,MainActivity.this);
                 googleSignInButton.setVisibility(View.GONE);
                 logoutButton.setVisibility(View.VISIBLE);
@@ -191,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
                         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
                         try {
                             // 구글 로그인 성공
+                            Log.d("제로이드", "로그인 성공");
                             MainActivity.this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
                             GoogleSignInAccount account = task.getResult(ApiException.class);
