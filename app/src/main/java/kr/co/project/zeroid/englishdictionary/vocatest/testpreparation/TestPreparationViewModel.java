@@ -1,5 +1,7 @@
 package kr.co.project.zeroid.englishdictionary.vocatest.testpreparation;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -14,6 +16,7 @@ public class TestPreparationViewModel extends ViewModel {
     SingleLiveEvent<Void> navigateToTest;
 
     public TestPreparationViewModel() {
+        Log.d("제로이드", "뷰모델 생성");
         navigateToTest = new SingleLiveEvent<>();
         isFinished = new MutableLiveData<>();
         second = new MutableLiveData<>();

@@ -2,6 +2,7 @@ package kr.co.project.zeroid.englishdictionary.addVoca;
 
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.Button;
@@ -73,6 +74,7 @@ public class AddVocaActivity extends AppCompatActivity {
                     else {
                         //onPreExecute
                         addVocaProgressBar.setVisibility(View.VISIBLE);
+                        Log.d("제로이드", "RxJava 실행");
                         //doInBackground
                         Observable.fromCallable(() -> {
                             searchText = searchVocaEditText.getText().toString();
@@ -165,6 +167,7 @@ public class AddVocaActivity extends AppCompatActivity {
     private void addInputVocaListToFirebaseRealtimeDatabaseOnlyEnglish(ArrayList<String> inputVocaList) {
         DatabaseReference myRef=databaseReference.child("users").child(FirebaseAuth.getInstance().getUid()).child(searchText);
         //기존에 추가한 단어를 중복해서 추가할경우 기존에 저장한 값은 없어짐
+        Log.d("제로이드3", searchText);
         myRef.setValue(searchText);
         int index=1;
         for(String inputVoca:inputVocaList) {
@@ -176,15 +179,18 @@ public class AddVocaActivity extends AppCompatActivity {
     }
 
     private void addInputVocaListToFirebaseRealtimeDatabaseOnlyKorean(ArrayList<String> inputVocaList) {
-        DatabaseReference myRef=databaseReference.child("users").child(FirebaseAuth.getInstance().getUid()).child(inputVocaList.get(0));
+        String text=inputVocaList.get(0).trim();
+        text=text.substring(0, 1).toUpperCase() + text.substring(1, text.length()).toLowerCase();
+        DatabaseReference myRef=databaseReference.child("users").child(FirebaseAuth.getInstance().getUid()).child(text);
         //기존에 추가한 단어를 중복해서 추가할경우 기존에 저장한 값은 없어짐
-        myRef.setValue(inputVocaList.get(0).trim());
+        myRef.setValue(text);
         myRef.child("-1").setValue(searchText);
         myRef.child("-틀린횟수").setValue("0");
     }
 
     private String searchEnglish(String searchText) {
         Document doc = null;
+        Log.d("제로이드_다음사전", "Jsoup 실행");
         try {
             doc = Jsoup.connect(getString(R.string.baseURL)+searchText).get();
         } catch (IOException e) {
@@ -196,6 +202,7 @@ public class AddVocaActivity extends AppCompatActivity {
 
     private String searchKorean(String searchText) {
         Document doc = null;
+        Log.d("제로이드", "Jsoup 실행");
         try {
             doc = Jsoup.connect(getString(R.string.baseURL)+searchText).get();
         } catch (IOException e) {
